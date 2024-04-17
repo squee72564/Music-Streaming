@@ -1,5 +1,5 @@
 # python venv #
-.venv/
+.backend/venv/
 
 # Django #
 *.log
