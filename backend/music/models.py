@@ -5,11 +5,11 @@ from django.conf import settings
 
 
 def get_album_cover_upload_path(instance, filename):
-    return f"user/{instance.user.username}/{filename}"
+    return f"users/{instance.user.username}/album_images/{filename}"
 
 
 def get_song_file_upload_path(instance, filename):
-    return f"user/{instance.user.username}/{filename}"
+    return f"users/{instance.user.username}/song_files/{filename}"
 
 
 class Label(models.Model):
