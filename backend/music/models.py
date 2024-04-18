@@ -1,6 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.conf import settings
+
+
+def get_album_cover_upload_path(instance, filename):
+    return f"user/{instance.user.username}/{filename}"
+
+
+def get_song_file_upload_path(instance, filename):
+    return f"user/{instance.user.username}/{filename}"
+
 
 class Label(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -17,7 +27,10 @@ class Album(models.Model):
     album_title = models.CharField(max_length=255)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     genre = models.CharField(max_length=255)
-    image = models.ImageField(upload_to=f"{user}/album_covers/")
+    image = models.ImageField(
+        default="no_image.jpg",
+        upload_to=get_album_cover_upload_path,
+    )
 
 
 class Song(models.Model):
@@ -26,4 +39,4 @@ class Song(models.Model):
     duration = models.DurationField()
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     artists = models.ManyToManyField(Artist)
-    song_file = models.FileField(upload_to=f"{user}/song_files/")
+    song_file = models.FileField(upload_to=get_song_file_upload_path)
