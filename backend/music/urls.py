@@ -8,8 +8,8 @@ urlpatterns = [
         name="user_albums_api",
     ),
     path(
-        "api/user/<int:user_id>/albums/<int:album_id>/",
-        UserAlbumAPIView.as_view(),
-        name="user_album_api",
+        "api/user/<int:user_id>/songs/",
+        UserSongsAPIView.as_view(),
+        name="user_songs_api",
     ),
 ]
