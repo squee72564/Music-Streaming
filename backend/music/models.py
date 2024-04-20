@@ -25,7 +25,7 @@ class Artist(models.Model):
 class Album(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     album_title = models.CharField(max_length=255)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, related_name="albums", on_delete=models.CASCADE)
     genre = models.CharField(max_length=255)
     image = models.ImageField(
         default="no_image.jpg",
