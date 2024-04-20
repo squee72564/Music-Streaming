@@ -23,9 +23,10 @@ class SongSerializer(serializers.ModelSerializer):
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    label = LabelSerializer()
-    songs = SongSerializer(source="song_set", many=True)
+    label = LabelSerializer(many=False)
+    songs = SongSerializer(many=True)
 
     class Meta:
         model = Album
         fields = "__all__"
+        exclude = ["user"]
