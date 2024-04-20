@@ -13,15 +13,18 @@ class ArtistSerializer(serializers.ModelSerializer):
         model = Artist
         exclude = ["user"]
 
+
 class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         exclude = ["user"]
 
+
 class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         exclude = ["user"]
+
 
 class SongNestedSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(many=True)
