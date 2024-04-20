@@ -13,8 +13,17 @@ class ArtistSerializer(serializers.ModelSerializer):
         model = Artist
         exclude = ["user"]
 
-
 class SongSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        exclude = ["user"]
+
+class AlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        exclude = ["user"]
+
+class SongNestedSerializer(serializers.ModelSerializer):
     artists = ArtistSerializer(many=True)
 
     class Meta:
@@ -22,11 +31,10 @@ class SongSerializer(serializers.ModelSerializer):
         exclude = ["user"]
 
 
-class AlbumSerializer(serializers.ModelSerializer):
+class AlbumNestedSerializer(serializers.ModelSerializer):
     label = LabelSerializer(many=False)
-    songs = SongSerializer(many=True)
+    songs = SongNestedSerializer(many=True)
 
     class Meta:
         model = Album
-        fields = "__all__"
         exclude = ["user"]
