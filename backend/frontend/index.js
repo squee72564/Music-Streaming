@@ -3,5 +3,5 @@ import ReactDOM from "react-dom";
 
 ReactDOM.render(
   <h1>Hello, react!</h1>,
-  document.getElementById('root')
+  document.getElementById('js-framework-home')
 );
