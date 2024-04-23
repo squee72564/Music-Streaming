@@ -13,17 +13,17 @@ def get_song_file_upload_path(instance, filename):
 
 
 class Label(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     label_name = models.CharField(max_length=255)
 
 
 class Artist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     artist_name = models.CharField(max_length=255)
 
 
 class Album(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album_title = models.CharField(max_length=255)
     label = models.ForeignKey(Label, related_name="albums", on_delete=models.CASCADE)
     genre = models.CharField(max_length=255)
@@ -34,7 +34,7 @@ class Album(models.Model):
 
 
 class Song(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     song_title = models.CharField(max_length=255)
     duration = models.DurationField()
     album = models.ForeignKey(Album, related_name="songs", on_delete=models.CASCADE)
