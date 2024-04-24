@@ -1,0 +1,10 @@
+<!-- logout -->
+{% extends "base_template.html" %}
+{% block content %}
+  <h1>Logout</h1>
+  <p>Are you sure you want to logout?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+{% endblock %}
