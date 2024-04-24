@@ -1,22 +1,22 @@
 from django.urls import path
 from .api_views import *
-from django.views.generic import TemplateView
+from .views import *
 
 urlpatterns = [
     # Testing react
     path(
         "test1/",
-        TemplateView.as_view(template_name="spa_client.html"),
+        Test1.as_view(template_name="spa_client.html"),
         name="test1",
     ),
     path(
         "test2/",
-        TemplateView.as_view(template_name="spa_client.html"),
+        Test2.as_view(template_name="spa_client.html"),
         name="test2",
     ),
     path(
         "test3/",
-        TemplateView.as_view(template_name="spa_client.html"),
+        Test3.as_view(template_name="spa_client.html"),
         name="test3",
     ),
     # Albums

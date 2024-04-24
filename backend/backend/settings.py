@@ -152,4 +152,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Redirect to here after login
-LOGIN_REDIRECT_URL = "/music/test1/"
+LOGIN_REDIRECT_URL = "/music/test-react-page/1/"
