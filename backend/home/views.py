@@ -20,3 +20,7 @@ class SignupCreateView(CreateView):
     form_class = UserCreationForm
     template_name = "home/signup.html"
     success_url = "/accounts/login/"
+
+
+class HomePageView(TemplateView):
+    template_name = "home/home.html"
