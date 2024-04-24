@@ -1,9 +1,9 @@
 from django.urls import path
 from .views import *
-from django.views.generic import TemplateView
 
 urlpatterns = [
     path("login/", LoginFormView.as_view(), name="login"),
-    path("logout/", LogoutRedirectView.as_view(), name="logout"),
+    path("logout/", LogoutConfirmationView.as_view(), name="logout_confirmation"),
+    path("logout-confirmed/", LogoutInterfaceView.as_view(), name="logout_interface"),
     path("signup/", SignupCreateView.as_view(), name="signup"),
 ]
