@@ -3,10 +3,21 @@ from .api_views import *
 from django.views.generic import TemplateView
 
 urlpatterns = [
+    # Testing react
     path(
-        "test/",
-        TemplateView.as_view(template_name="music/test.html"),
-        name="test",
+        "test1/",
+        TemplateView.as_view(template_name="spa_client.html"),
+        name="test1",
+    ),
+    path(
+        "test2/",
+        TemplateView.as_view(template_name="spa_client.html"),
+        name="test2",
+    ),
+    path(
+        "test3/",
+        TemplateView.as_view(template_name="spa_client.html"),
+        name="test3",
     ),
     # Albums
     path(
