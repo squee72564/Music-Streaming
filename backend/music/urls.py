@@ -5,19 +5,14 @@ from .views import *
 urlpatterns = [
     # Testing react
     path(
-        "test1/",
-        Test1.as_view(template_name="spa_client.html"),
-        name="test1",
+        "test-react-page/",
+        TestReactView.as_view(),
+        name="test_react_page",
     ),
     path(
-        "test2/",
-        Test2.as_view(template_name="spa_client.html"),
-        name="test2",
-    ),
-    path(
-        "test3/",
-        Test3.as_view(template_name="spa_client.html"),
-        name="test3",
+        "test-react-page/<path:path>",
+        TestReactView.as_view(),
+        name="test_react_page_with_path",
     ),
     # Albums
     path(
