@@ -1,5 +1,6 @@
 <!-- logout -->
 {% extends "base_template.html" %}
+{% load static %}
 {% block content %}
   <form method="post" action="{% url 'logout_interface' %}">
     {% csrf_token %}
