@@ -11,6 +11,7 @@ node_modules
 __pycache__
 db.sqlite3
 backend/media/users/*
+backend/static_files/*
 
 # Backup files # 
 *.bak 
