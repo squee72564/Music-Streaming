@@ -4,7 +4,7 @@ module.exports = {
     entry: './src/index.jsx',
     output: {
         filename: 'js-bundle.js',
-        path: path.resolve(__dirname, '../backend/static_files/'),
+        path: path.resolve(__dirname, '../backend/static_files/js/'),
     },
     module : {
         rules: [
