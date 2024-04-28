@@ -2,10 +2,14 @@
 {% extends "base_template.html" %}
 {% load static %}
 {% block content %}
-  <h1>Sign Up</h1>
-  <form method="post">
+<div class="flex flex-col justify-center items-center align-center h-96">
+  <form method="post" class="flex flex-col justify-start p-4 border-black border-2 rounded-lg bg-gray-100 space-y-4">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
+    <h1 class="text-xl text-center font-bold">Create an account below</h1>
+    <div class="flex flex-col space-y-4">
+      {{ form.as_p }}
+    </div>
+    <button type="submit" class="font-bold py-1 px-2 rounded bg-gray-700 text-white">Sign Up</button>
   </form>
+</div>
 {% endblock %}

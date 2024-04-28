@@ -2,8 +2,11 @@
 {% extends "base_template.html" %}
 {% load static %}
 {% block content %}
+<div class="flex flex-col justify-center items-center align-center space-y-12 h-96">
+  <h1 class="font-bold text-xl">Are you sure you want to logout?</h1>
   <form method="post" action="{% url 'logout_interface' %}">
     {% csrf_token %}
-    <button type="submit">Logout</button>
+    <button type="submit" class="font-bold py-1 px-2 rounded bg-gray-700 text-white w-full">Confirm Logout</button>
   </form>
+</div>
 {% endblock %}
