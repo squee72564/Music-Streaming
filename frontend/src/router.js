@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import TestPage1 from './pages/TestPage1';
+import ProfilePage from './pages/ProfilePage';
 import TestPage2 from './pages/TestPage2';
 import TestPage3 from './pages/TestPage3';
 import ErrorPage from './pages/ErrorPage';
@@ -7,7 +7,7 @@ import ErrorPage from './pages/ErrorPage';
 export const router = createBrowserRouter([
     {
       path: "/music/test-react-page/1",
-      element: <TestPage1 />,
+      element: <ProfilePage />,
       errorElement: <ErrorPage />,
     },
     {
