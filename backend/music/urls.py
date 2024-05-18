@@ -5,14 +5,9 @@ from .views import *
 urlpatterns = [
     # Testing react
     path(
-        "test-react-page/",
+        "collection/",
         TestReactView.as_view(),
-        name="test_react_page",
-    ),
-    path(
-        "test-react-page/<path:path>",
-        TestReactView.as_view(),
-        name="test_react_page_with_path",
+        name="music_collection_page",
     ),
     # Albums
     path(
@@ -21,14 +16,19 @@ urlpatterns = [
         name="user_album_create_api",
     ),
     path(
-        "api/user/<int:user_id>/albums/<int:pk>/",
+        "api/albums/<int:pk>/",
         UserAlbumsRetrieveUpdateDestroyAPIView.as_view(),
         name="user_album_rud_api",
     ),
     path(
-        "api/user/<int:user_id>/albums/",
+        "api/albums/",
         UserAlbumsListAPIView.as_view(),
-        name="user_albums_list_api",
+        name="user_albums_nested_list_api",
+    ),
+    path(
+        "api/albums/",
+        UserAlbumsListAPIView.as_view(),
+        name="user_albums_nested_list_api",
     ),
     # Songs
     path(
@@ -37,12 +37,12 @@ urlpatterns = [
         name="user_songs_create_api",
     ),
     path(
-        "api/user/<int:user_id>/songs/<int:pk>/",
+        "api/songs/<int:pk>/",
         UserSongsRetrieveUpdateDestroyAPIView.as_view(),
         name="user_songs_rud_api",
     ),
     path(
-        "api/user/<int:user_id>/songs/",
+        "api/songs/",
         UserSongsListAPIView.as_view(),
         name="user_songs_list_api",
     ),
@@ -53,12 +53,12 @@ urlpatterns = [
         name="user_artsts_create_api",
     ),
     path(
-        "api/user/<int:user_id>/artists/<int:pk>/",
+        "api/artists/<int:pk>/",
         UserArtistsRetrieveUpdateDestroyAPIView.as_view(),
         name="user_artsts_rud_api",
     ),
     path(
-        "api/user/<int:user_id>/artists/",
+        "api/artists/",
         UserArtistsListAPIView.as_view(),
         name="user_artists_list_api",
     ),
@@ -69,12 +69,12 @@ urlpatterns = [
         name="user_labels_create_api",
     ),
     path(
-        "api/user/<int:user_id>/labels/<int:pk>/",
+        "api/labels/<int:pk>/",
         UserLabelsRetrieveUpdateDestroyAPIView.as_view(),
         name="user_labels_rud_api",
     ),
     path(
-        "api/user/<int:user_id>/labels/",
+        "api/labels/",
         UserLabelsListAPIView.as_view(),
         name="user_labels_list_api",
     ),
