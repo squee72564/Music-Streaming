@@ -5,20 +5,15 @@ from .serializers import *
 
 
 class UserAlbumsListAPIView(generics.ListAPIView):
-    serializer_class = AlbumNestedSerializer
+    serializer_class = AlbumSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return (
-                Album.objects.filter(user_id=user_id)
-                .select_related("label")
-                .prefetch_related("songs__artists")
-            )
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return (
+            Album.objects.filter(user_id=self.request.user.id)
+            .select_related("label")
+            .prefetch_related("songs__artists")
+        )
 
 
 class UserAlbumsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -27,12 +22,7 @@ class UserAlbumsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVi
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return self.queryset.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return self.queryset.filter(user_id=self.request.user.id)
 
 
 class UserAlbumsCreateAPIView(generics.CreateAPIView):
@@ -49,12 +39,9 @@ class UserSongsListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return Song.objects.filter(user_id=user_id).prefetch_related("artists")
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return Song.objects.filter(user_id=self.request.user.id).prefetch_related(
+            "artists"
+        )
 
 
 class UserSongsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -63,12 +50,7 @@ class UserSongsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVie
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return self.queryset.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return self.queryset.filter(user_id=self.request.user.id)
 
 
 class UserSongsCreateAPIView(generics.CreateAPIView):
@@ -85,12 +67,7 @@ class UserLabelsListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return Label.objects.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return Label.objects.filter(user_id=self.request.user.id)
 
 
 class UserLabelsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -99,12 +76,7 @@ class UserLabelsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVi
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return self.queryset.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return self.queryset.filter(user_id=self.request.user.id)
 
 
 class UserLabelsCreateAPIView(generics.CreateAPIView):
@@ -121,12 +93,7 @@ class UserArtistsListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return Artist.objects.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return Artist.objects.filter(user_id=self.request.user.id)
 
 
 class UserArtistsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -135,12 +102,7 @@ class UserArtistsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs["user_id"]
-
-        if self.request.user.is_superuser or self.request.user.id == user_id:
-            return self.queryset.filter(user_id=user_id)
-        else:
-            raise PermissionDenied("You are not allowed to access this resource.")
+        return self.queryset.filter(user_id=self.request.user.id)
 
 
 class UserArtistsCreateAPIView(generics.CreateAPIView):
