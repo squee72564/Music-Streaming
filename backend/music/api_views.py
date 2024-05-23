@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions
 from rest_framework.pagination import LimitOffsetPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Album
 from .serializers import *
 
@@ -8,6 +9,8 @@ class UserAlbumsListAPIView(generics.ListAPIView):
     serializer_class = AlbumSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LimitOffsetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['label']
 
 
     def get_queryset(self):
