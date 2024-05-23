@@ -6,7 +6,11 @@
     <h1 class="text-3xl font-bold">TEMPLATENAME</h1>
     <p>TEMPLATENAME is a full-stack web application that allows users to upload and stream their media collections.</p>
     <img src="{% static 'images/chaosv2.svg' %}" alt="Musical Note Logo" width="15%" height="15%">
+    {% if user.is_authenticated %}
+    <p class="max-w-80 space-y-10">Press <b>Logout</b> to safely logout before you leave.</p>
+    {% else %}
     <p class="max-w-80 space-y-10">Press <b>Login</b> or <b>Sign Up</b> on the top right to get started.</p>
+    {% endif %}
 </div>
 <footer class="bottom-0 absolute p-4"> <p>Created with <a class="underline" href="https://www.djangoproject.com/">Django</a>, <a class="underline" href="https://www.django-rest-framework.org/">Django Rest Framework</a>, <a class="underline" href="https://react.dev/">ReactJS</a>, <a class="underline" href="https://tailwindcss.com/">TailwindCSS</a> + more!</p></footer>
 {% endblock %}
