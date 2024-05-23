@@ -57,9 +57,9 @@ const MusicCollection = () => {
   }
 
   return (
-    <div className='rounded bg-gray-400 flex flex-col justify-center items-center m-5'>
+    <div className='rounded bg-gray-400 flex flex-col justify-center m-5'>
       <h1 className='text-xl font-bold m-5'>Welcome, {username}!</h1>
-      <div className='rounded-b bg-gray-200 content-stretch text-center space-y-10 w-full'>
+      <div className='rounded-b bg-gray-200 content-stretch text-center space-y-8 w-full'>
         <h1 className='text-xl font-bold m-3'>Your Albums</h1>
         <div className='space-x-10'>
           <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(prevPage)}>Prev</button>
@@ -74,14 +74,15 @@ const MusicCollection = () => {
             </div>
           ))}
         </div>
-        <h1 className='text-xl font-bold m-3'>Filter by label</h1>
-        <div id='Labels' className='flex space-x-10 m-5'>
-        <h2 className='font-bold m-3' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</h2>
-          {labels && labels.map((label) => (
-            <div key={label.id}>
-              <h2 className='font-bold m-3' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}>{label.label_name}</h2>
-            </div>
-          ))}
+        <h1 className='text-xl font-bold m-3'>Filter by...</h1>
+        <div className='flex flex-col items-center'>
+          <h2 className='font-bold'>Label</h2>
+          <ul className='rounded overflow-y-auto h-24 bg-white'>
+            <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</li>
+            {labels && labels.map((label) => (
+              <li key={label.id} className='m-2' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}>{label.label_name}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
