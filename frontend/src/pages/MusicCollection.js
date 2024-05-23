@@ -65,7 +65,7 @@ const MusicCollection = () => {
           <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(prevPage)}>Prev</button>
           <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(nextPage)}>Next</button>
         </div>
-        <div id='Albums' className='flex justify-center space-x-10 m-5'>
+        <div id='Albums' className='flex justify-center space-x-10 m-5 min-h-48'>
           {albums && albums.map((album) => (
             <div key={album.id} onClick={()=>handleAlbumClick(album.id)} style={{ cursor: 'pointer' }}>
               <h2>{album.album_title}</h2>
