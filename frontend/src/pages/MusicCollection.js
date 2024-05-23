@@ -74,11 +74,12 @@ const MusicCollection = () => {
             </div>
           ))}
         </div>
-        <h1 className='text-xl font-bold m-3'>Your Labels</h1>
+        <h1 className='text-xl font-bold m-3'>Filter by label</h1>
         <div id='Labels' className='flex space-x-10 m-5'>
+        <h2 className='font-bold m-3' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</h2>
           {labels && labels.map((label) => (
             <div key={label.id}>
-              <h2 className='font-bold m-3' >{label.label_name}</h2>
+              <h2 className='font-bold m-3' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}>{label.label_name}</h2>
             </div>
           ))}
         </div>
