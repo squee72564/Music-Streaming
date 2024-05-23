@@ -12,13 +12,14 @@ const AlbumPage = () => {
       try {
         const albumResponse = await fetch(apiUrl);
 
-        if (albumResponse.ok) {
+        if (albumResponse.status === 404) {
+          console.error("Album not found.");
+          setAlbumInfo({ notFound: true }); 
+        } else if (albumResponse.ok) {
           const albumData = await albumResponse.json();
-
           setAlbumInfo(albumData);
-
         } else {
-        console.error("Album API requests failed.");
+          console.error("Album API requests failed.");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -32,6 +33,10 @@ const AlbumPage = () => {
     return (
       <h1>LOADING...</h1>
     );
+  }
+
+  if (albumInfo.notFound) {
+    return <h1>Album not found.</h1>;
   }
 
   return (
