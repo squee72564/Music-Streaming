@@ -3,12 +3,18 @@ from .api_views import *
 from .views import *
 
 urlpatterns = [
-    # Testing react
+    # React 
     path(
         "collection/",
         TestReactView.as_view(),
         name="music_collection_page",
     ),
+    path(
+        "collection/<int:id>",
+        TestReactView.as_view(),
+        name="album_view",
+    ),
+
     # Albums
     path(
         "api/albums/create/",
