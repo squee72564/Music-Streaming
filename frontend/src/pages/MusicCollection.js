@@ -44,7 +44,7 @@ const MusicCollection = () => {
       <h1 className='text-xl font-bold m-5'>Welcome, {username}!</h1>
       <div className='rounded-b bg-gray-200 content-stretch text-center space-y-10 w-full'>
         <h1 className='text-xl font-bold m-3'>Your Albums</h1>
-        <div id='Albums' className='flex space-x-10 m-5'>
+        <div id='Albums' className='flex justify-center space-x-10 m-5'>
           {albums && albums.map((album) => (
             <div key={album.id} onClick={()=>handleAlbumClick(album.id)} style={{ cursor: 'pointer' }}>
               <h2>{album.album_title}</h2>
