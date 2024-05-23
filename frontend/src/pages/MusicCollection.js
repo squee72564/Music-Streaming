@@ -8,42 +8,63 @@ const MusicCollection = () => {
   const username = document.getElementById('root').getAttribute('data-username');
   const [albums, setAlbums] = useState(null);
   const [labels, setLabels] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+
+  const fetchAlbums = async (url) => {
+    try {
+      const albumResponse = await fetch(url);
+      if (albumResponse.ok) {
+        const albumData = await albumResponse.json();
+        setAlbums(albumData.results);
+        setNextPage(albumData.next);
+        setPrevPage(albumData.previous);
+      } else {
+        console.error("Albums API request failed.");
+      }
+    } catch (error) {
+      console.error("Error fetching albums:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLabels = async () => {
       try {
-        const [albumResponse, labelResponse] = await Promise.all([
-          fetch("http://127.0.0.1:8000/music/api/albums/"),
-          fetch("http://127.0.0.1:8000/music/api/labels/")
-        ]);
-  
-        if (albumResponse.ok && labelResponse.ok) {
-          const albumData = await albumResponse.json();
+        const labelResponse = await fetch("http://127.0.0.1:8000/music/api/labels/");
+        if (labelResponse.ok) {
           const labelData = await labelResponse.json();
-  
-          setAlbums(albumData);
-          setLabels(labelData);
-        
+          setLabels(labelData.results);
         } else {
-          console.error("One or more API requests failed.");
+          console.error("Labels API request failed.");
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching labels:", error);
       }
     };
   
-    fetchData();
+    fetchAlbums('http://127.0.0.1:8000/music/api/albums/');
+    fetchLabels();
   }, []);
 
   const handleAlbumClick = (albumId) => {
     navigate(`${albumId}`);
   };
 
+  const fetchPageData = (url) => {
+    if (url) {
+      fetchAlbums(url);
+    }
+  }
+
   return (
     <div className='rounded bg-gray-400 flex flex-col justify-center items-center m-5'>
       <h1 className='text-xl font-bold m-5'>Welcome, {username}!</h1>
       <div className='rounded-b bg-gray-200 content-stretch text-center space-y-10 w-full'>
         <h1 className='text-xl font-bold m-3'>Your Albums</h1>
+        <div className='space-x-10'>
+          <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(prevPage)}>Prev</button>
+          <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(nextPage)}>Next</button>
+        </div>
         <div id='Albums' className='flex justify-center space-x-10 m-5'>
           {albums && albums.map((album) => (
             <div key={album.id} onClick={()=>handleAlbumClick(album.id)} style={{ cursor: 'pointer' }}>
