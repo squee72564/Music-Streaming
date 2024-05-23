@@ -18,7 +18,7 @@ class UserAlbumsListAPIView(generics.ListAPIView):
 
 class UserAlbumsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Album.objects.all()
-    serializer_class = AlbumSerializer
+    serializer_class = AlbumNestedSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
