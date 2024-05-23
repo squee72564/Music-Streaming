@@ -29,7 +29,7 @@ const AlbumPage = () => {
     fetchData();
   }, [apiUrl]);
 
-  if (!albumInfo) {
+  if (albumInfo === null) {
     return (
       <h1>LOADING...</h1>
     );
