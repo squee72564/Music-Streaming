@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Album
+from .models import *
 from .serializers import *
 
 
@@ -10,14 +10,14 @@ class UserAlbumsListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = LimitOffsetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['label']
-
+    filterset_fields = ["label", "genres"]
 
     def get_queryset(self):
         return (
             Album.objects.filter(user_id=self.request.user.id)
             .select_related("label")
             .prefetch_related("songs__artists")
+            .prefetch_related("genres")
         )
 
 
@@ -113,6 +113,32 @@ class UserArtistsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
 class UserArtistsCreateAPIView(generics.CreateAPIView):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class UserGenresListAPIView(generics.ListAPIView):
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Genre.objects.filter(user_id=self.request.user.id)
+
+
+class UserGenresRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Genre.objects.filter(user_id=self.request.user.id)
+
+
+class UserGenresCreateAPIView(generics.CreateAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
