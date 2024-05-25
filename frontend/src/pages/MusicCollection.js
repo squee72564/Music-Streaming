@@ -8,6 +8,7 @@ const MusicCollection = () => {
   const username = document.getElementById('root').getAttribute('data-username');
   const [albums, setAlbums] = useState(null);
   const [labels, setLabels] = useState(null);
+  const [genres, setGenres] = useState(null);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
 
@@ -16,7 +17,7 @@ const MusicCollection = () => {
       const albumResponse = await fetch(url);
       if (albumResponse.ok) {
         const albumData = await albumResponse.json();
-        setAlbums(albumData.results);
+        setAlbums(albumData.results); 
         setNextPage(albumData.next);
         setPrevPage(albumData.previous);
       } else {
@@ -28,22 +29,40 @@ const MusicCollection = () => {
   };
 
   useEffect(() => {
+
     const fetchLabels = async () => {
-      try {
-        const labelResponse = await fetch("http://127.0.0.1:8000/music/api/labels/");
-        if (labelResponse.ok) {
-          const labelData = await labelResponse.json();
-          setLabels(labelData.results);
-        } else {
-          console.error("Labels API request failed.");
-        }
-      } catch (error) {
-        console.error("Error fetching labels:", error);
+      const labelResponse = await fetch("http://127.0.0.1:8000/music/api/labels/");
+      if (labelResponse.ok) {
+        const labelData = await labelResponse.json();
+        setLabels(labelData.results);
+      } else {
+        console.error("Labels API request failed.");
       }
     };
-  
-    fetchAlbums('http://127.0.0.1:8000/music/api/albums/');
-    fetchLabels();
+
+    const fetchGenres = async () => {
+      const genreResponse = await fetch("http://127.0.0.1:8000/music/api/genres/");
+      if (genreResponse.ok) {
+        const genreData = await genreResponse.json();
+        setGenres(genreData.results);
+      } else {
+        console.error("Genres API request failed.");
+      }
+    };
+    
+    const fetchAllData = async () => {
+      try {
+        await Promise.all([
+          fetchAlbums('http://127.0.0.1:8000/music/api/albums/'),
+          fetchLabels(),
+          fetchGenres(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    }
+
+    fetchAllData();
   }, []);
 
   const handleAlbumClick = (albumId) => {
@@ -56,10 +75,11 @@ const MusicCollection = () => {
     }
   }
 
+
   return (
-    <div className='rounded bg-gray-400 flex flex-col justify-center m-5'>
+    <div className='rounded flex flex-col justify-center m-5'>
       <h1 className='text-xl font-bold m-5'>Welcome, {username}!</h1>
-      <div className='rounded-b bg-gray-200 content-stretch text-center space-y-8 w-full'>
+      <div className='rounded-b bg-gray-200 text-center space-y-8 w-full'>
         <h1 className='text-xl font-bold m-3'>Your Albums</h1>
         <div className='space-x-10'>
           <button className='rounded bg-gray-400 px-4' onClick={() => fetchPageData(prevPage)}>Prev</button>
@@ -75,14 +95,25 @@ const MusicCollection = () => {
           ))}
         </div>
         <h1 className='text-xl font-bold m-3'>Filter by...</h1>
-        <div className='flex flex-col items-center'>
-          <h2 className='font-bold'>Label</h2>
-          <ul className='rounded overflow-y-auto h-24 bg-white'>
-            <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</li>
-            {labels && labels.map((label) => (
-              <li key={label.id} className='m-2' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}>{label.label_name}</li>
-            ))}
-          </ul>
+        <div className='flex flex-row justify-around'>
+          <div className='flex flex-col'>
+            <h2 className='font-bold'>Label</h2>
+            <ul className='rounded overflow-y-auto bg-white h-24 '>
+              <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</li>
+              {labels && labels.map((label) => (
+                <li key={label.id} className='m-2' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}>{label.label_name}</li>
+              ))}
+            </ul>
+          </div>
+          <div className='flex flex-col'>
+            <h2 className='font-bold'>Genre</h2>
+            <ul className='rounded overflow-y-auto bg-white h-24 '>
+              <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All Genres</li>
+              {genres && genres.map((genre) => (
+                <li key={genre.id} className='m-2' onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?genres=${genre.id}`)}>{genre.genre_name}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
