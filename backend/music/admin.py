@@ -12,21 +12,26 @@ class ArtistAdmin(admin.ModelAdmin):
     list_display = ("artist_name",)
 
 
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ("genre_name",)
+
+
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
     list_display = (
         "album_title",
         "label",
-        "genre",
         "image",
     )
+    filter_horizontal = ("genres",)
 
 
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
     list_display = (
         "song_title",
-        "duration",
+        "song_file",
         "album",
     )
     filter_horizontal = ("artists",)

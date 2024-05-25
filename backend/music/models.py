@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
-
 from django.conf import settings
 
 
@@ -22,11 +20,16 @@ class Artist(models.Model):
     artist_name = models.CharField(max_length=255)
 
 
+class Genre(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    genre_name = models.CharField(max_length=255)
+
+
 class Album(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album_title = models.CharField(max_length=255)
     label = models.ForeignKey(Label, related_name="albums", on_delete=models.CASCADE)
-    genre = models.CharField(max_length=255)
+    genres = models.ManyToManyField(Genre)
     image = models.ImageField(
         default="no_image.jpg",
         upload_to=get_album_cover_upload_path,
@@ -36,7 +39,6 @@ class Album(models.Model):
 class Song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     song_title = models.CharField(max_length=255)
-    duration = models.DurationField()
+    song_file = models.FileField(upload_to=get_song_file_upload_path)
     album = models.ForeignKey(Album, related_name="songs", on_delete=models.CASCADE)
     artists = models.ManyToManyField(Artist)
-    song_file = models.FileField(upload_to=get_song_file_upload_path)
