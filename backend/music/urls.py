@@ -3,7 +3,7 @@ from .api_views import *
 from .views import *
 
 urlpatterns = [
-    # React 
+    # React
     path(
         "collection/",
         TestReactView.as_view(),
@@ -14,7 +14,6 @@ urlpatterns = [
         TestReactView.as_view(),
         name="album_view",
     ),
-
     # Albums
     path(
         "api/albums/create/",
@@ -83,5 +82,21 @@ urlpatterns = [
         "api/labels/",
         UserLabelsListAPIView.as_view(),
         name="user_labels_list_api",
+    ),
+    # Genres
+    path(
+        "api/genres/create/",
+        UserGenresCreateAPIView.as_view(),
+        name="user_genres_create_api",
+    ),
+    path(
+        "api/genres/<int:pk>/",
+        UserGenresRetrieveUpdateDestroyAPIView.as_view(),
+        name="user_genres_rud_api",
+    ),
+    path(
+        "api/genres/",
+        UserGenresListAPIView.as_view(),
+        name="user_genres_list_api",
     ),
 ]
