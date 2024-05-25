@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Label, Artist, Album, Song
+from .models import Label, Artist, Album, Song, Genre
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -14,15 +14,15 @@ class ArtistSerializer(serializers.ModelSerializer):
         exclude = ["user"]
 
 
-class SongSerializer(serializers.ModelSerializer):
+class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Song
+        model = Genre
         exclude = ["user"]
 
 
-class AlbumSerializer(serializers.ModelSerializer):
+class SongSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Album
+        model = Song
         exclude = ["user"]
 
 
@@ -34,9 +34,16 @@ class SongNestedSerializer(serializers.ModelSerializer):
         exclude = ["user"]
 
 
+class AlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        exclude = ["user"]
+
+
 class AlbumNestedSerializer(serializers.ModelSerializer):
     label = LabelSerializer(many=False)
     songs = SongNestedSerializer(many=True)
+    genres = GenreSerializer(many=True)
 
     class Meta:
         model = Album
