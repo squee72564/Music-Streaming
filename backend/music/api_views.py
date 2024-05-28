@@ -1,8 +1,12 @@
 from rest_framework import generics, permissions
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
 from .models import *
 from .serializers import *
+import json
 
 
 class UserAlbumsListAPIView(generics.ListAPIView):
@@ -31,12 +35,37 @@ class UserAlbumsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVi
 
 
 class UserAlbumsCreateAPIView(generics.CreateAPIView):
-    queryset = Album.objects.all()
-    serializer_class = AlbumSerializer
+    serializer_class = AlbumNestedSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def post(self, request, *args, **kwargs):
+        # We convert json passed in from front end into python dictionary needed for serialization
+        for key, value in request.data.items():
+            # Check if the value is a string and can be parsed as JSON
+            if isinstance(value, str):
+                try:
+                    # Attempt to parse the value as JSON
+                    parsed_value = json.loads(value)
+                    request.data[key] = parsed_value
+                except json.JSONDecodeError:
+                    # If parsing fails, leave the value unchanged
+                    pass
+
+        # Attach recieved files to the song data for serializer
+        for key, file in request.FILES.items():
+            # Extract the index from the key
+            try:
+                index = int(key.split("[")[1].split("]")[0])
+            except:
+                continue
+
+            # Attach the file to the corresponding song data
+            request.data[f"songs[{index}]"]["song_file"] = file
+
+        response = super().post(request, *args, **kwargs)
+
+        return response
 
 
 class UserSongsListAPIView(generics.ListAPIView):
