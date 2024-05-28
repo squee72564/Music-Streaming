@@ -40,5 +40,7 @@ class Song(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     song_title = models.CharField(max_length=255)
     song_file = models.FileField(upload_to=get_song_file_upload_path)
-    album = models.ForeignKey(Album, related_name="songs", on_delete=models.CASCADE)
+    album = models.ForeignKey(
+        Album, related_name="songs", on_delete=models.CASCADE, null=True, blank=True
+    )
     artists = models.ManyToManyField(Artist)
