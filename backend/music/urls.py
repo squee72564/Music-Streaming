@@ -14,6 +14,11 @@ urlpatterns = [
         TestReactView.as_view(),
         name="album_view",
     ),
+    path(
+        "create/",
+        TestReactView.as_view(),
+        name="album_create_view",
+    ),
     # Albums
     path(
         "api/albums/create/",
