@@ -123,9 +123,6 @@ const AlbumCreationPage = () => {
     }
 
     const validateSubmission = async (event) => {
-        event.preventDefault();
-        console.log(albumData);
-
         if (albumData.album_title === "") return;
 
         if (albumData.label.label_name === "") return;
@@ -142,7 +139,6 @@ const AlbumCreationPage = () => {
             ))
         ) return;
 
-        console.log("SENDING VALID DATA!");
         await handleSubmit();
     }
 
