@@ -23,6 +23,7 @@ Right now to build and run the application you can do the following steps:
 	*   run `npm install` to install required JS packages
 	*	 run `npm run webpack-dev` to transpile JS/JSX files with babel and send them to the static files folder for the application to be served by the server
 	*	 run `npm run tailwind` to parse JS/JSX files for TailwindCSS classes utilized and send the output .css file to the static files folder for the application to be served by the server
+	*	**These steps need to be completed for the application to work properly** 
 
 4. Going back to the backend folder, you want to activate your python virtual environment
 	*   This is different across OSs, but generally there will be a `venv/scripts/` or `venv/bin/` directory that has the "activate" script to start up the virtual environment
