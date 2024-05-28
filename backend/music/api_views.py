@@ -65,6 +65,9 @@ class UserAlbumsCreateAPIView(generics.CreateAPIView):
 
         return response
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class UserSongsListAPIView(generics.ListAPIView):
     serializer_class = SongNestedSerializer
