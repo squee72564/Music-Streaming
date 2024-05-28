@@ -13,7 +13,6 @@ const AlbumPage = () => {
         const albumResponse = await fetch(apiUrl);
 
         if (albumResponse.status === 404) {
-          console.error("Album not found.");
           setAlbumInfo({ notFound: true }); 
         } else if (albumResponse.ok) {
           const albumData = await albumResponse.json();
@@ -44,8 +43,12 @@ const AlbumPage = () => {
       <div className="flex flex-col items-center bg-gray-400 p-8 rounded-lg w-full max-w-xl gap-1">
         <h1 className="text-xl font-bold">{albumInfo.album_title}</h1>
         <img src={albumInfo.image} className="w-48 h-48" alt={albumInfo.album_title}></img>
-        <h2>Label: {albumInfo.label.label_name}</h2>
-        <p>Genre: {albumInfo.genre}</p>
+        <h2 className="font-medium">{"Label: " + albumInfo.label.label_name}</h2>
+        <p className="font-medium">
+          {"Genres: " + albumInfo.genres.map((genre) => {
+            return genre.genre_name
+          }).join(', ')}
+        </p>
         <select
           onChange={(event) => {
             const songFile = event.target.value;
@@ -53,7 +56,7 @@ const AlbumPage = () => {
             audioPlayer.src = songFile;
             audioPlayer.play();
           }}
-          className="text-center"
+          className="text-center p-1"
           defaultValue=""
         >
           <option value="" disabled hidden>Select a song</option>
