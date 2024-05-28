@@ -1,9 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.parsers import MultiPartParser
 from .models import *
 from .serializers import *
 import json
