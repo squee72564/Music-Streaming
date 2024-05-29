@@ -79,9 +79,7 @@ const AlbumCreationPage = () => {
 
     const handleSongChange  = (event, index) => {
         const {value} = event.target;
-
-        if (value === "") return;
-
+        
         let updatedSongData = albumData.songs;
 
         updatedSongData[index].song_title = value;
@@ -225,22 +223,22 @@ const AlbumCreationPage = () => {
     };
 
     return (
-        <form className="flex flex-col items-center space-y-8" onSubmit={validateSubmission} encType="multipart/form-data">
-            <div className="flex flex-row justify-center">
+        <form className="flex flex-col rounded bg-gray-300 justify-center items-center space-y-8 w-4/6 ml-auto mr-auto mt-20 p-8" onSubmit={validateSubmission} encType="multipart/form-data">
+            <div className="flex flex-row justify-center items-center space-x-8">
                 {/** Album Input */}
-                <label>
-                    {"Album title: "}
+                <label className="flex flex-col">
+                    Album title:
                     <input type="text" name="album_title" value={albumData.album_title} onChange={handleTitleChange} />
                 </label>
-                <label>
-                    {"Album Image: "}
+                <label className="flex flex-col">
+                    Album Image:
                     <input type="file" name="image" onChange={handleImageChange} accept="image/*"/>
                 </label>
             </div>
-            <div className="flex flex-row justify-center">
+            <div className="flex flex-row justify-center items-center space-x-12 ">
                 {/** Label Input */}
-                <label>
-                    {"Select a label: "}
+                <label className="flex flex-col">
+                    Select a label:
                     <select onChange={handleLabelChange}>
                         <option value="">Select Label</option>
                         <option value="Test Label">Test Label</option>
@@ -250,7 +248,7 @@ const AlbumCreationPage = () => {
                 {/** Genres Input */}
                 <div>
                     Check to add a genre:
-                    <div className="flex flex-col items-center bg-white overflow-y-auto">
+                    <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
                         <Checkbox label="Test Genre 1" indices={[0]} value={genreCheckbox[0]} onChange={handleGenreChange}/>
                         <Checkbox label="Test Genre 2" indices={[1]} value={genreCheckbox[1]} onChange={handleGenreChange}/>
                         {/*Map over backend Labels or create label checkbox to select*/}
@@ -259,35 +257,33 @@ const AlbumCreationPage = () => {
             </div>
             {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
             {albumData.songs.map((song, index) => (
-                <div key={index} className="flex flex-row justify-center items-center space-x-3">
+                <div key={index} className="flex flex-row justify-center items-center space-x-8">
                     <label className="flex flex-col">
                         Song Title:
                         <input type="text" name="song_title" value={song.song_title} onChange={(event) => handleSongChange(event, index)}/>
                     </label>
                     <div>
                         Check to add a artist:
-                        <div className="flex flex-col items-center bg-white overflow-y-auto">
+                        <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
                             <Checkbox label="Test Artist 1" indices={[0, index]} value={artistCheckbox[0]} onChange={handleArtistChange}/>
                             <Checkbox label="Test Artist 2" indices={[1, index]} value={artistCheckbox[1]} onChange={handleArtistChange}/>
                             {/*Map over backend Artists or create label checkbox to select?*/}
                         </div>
                     </div>
-                    <div className="flex flex-col">
+                    <label className="flex flex-col">
                         Upload Song File:
-                        <label>
-                            <input type="file" onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
-                        </label>
-                    </div>
+                        <input type="file" onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
+                    </label>
                 </div>
             ))}
-            <div className="flex flex-row justify-center">
-                <button className="rounded bg-gray-400 p-3" type="button" onClick={addNewSongData}>
+            <div className="flex flex-row justify-center space-x-8">
+                <button className="rounded bg-gray-400 p-2" type="button" onClick={addNewSongData}>
                     Add New Song
                 </button>
-                <button className="rounded bg-gray-400 p-3" type="button" onClick={removeLastSongData}>
+                <button className="rounded bg-gray-400 p-2" type="button" onClick={removeLastSongData}>
                     Remove Last Song
                 </button>
-                <button className="rounded bg-gray-400 p-3" type="submit">Submit</button>
+                <button className="rounded bg-gray-400 p-2" type="submit">Submit</button>
             </div>
         </form>
     )
