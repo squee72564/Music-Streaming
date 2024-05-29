@@ -66,7 +66,7 @@ const MusicCollection = () => {
   }, []);
 
   const handleAlbumClick = (albumId) => {
-    navigate(`${albumId}`);
+    navigate(`/music/collection/${albumId}`);
   };
 
   const fetchPageData = (url) => {
