@@ -1,3 +1,4 @@
+
 # Welcome to Music Streaming!
 
 Music Streaming is a full stack prototype that utilizes technologies such as Django, Django Rest Framework, ReactJS, for a platform for users to upload music collections and stream them from the web.
@@ -30,6 +31,10 @@ Right now to build and run the application you can do the following steps:
 
 5. In the backend folder you can run `python manage.py runserver` to start the server which will allow the web app be accessed through your localhost IP on port 8000: `http://127.0.0.1:8000/`
 
+## Example images
+<img src="https://github.com/squee72564/Music-Streaming/raw/main/github/home.PNG" alt="home page" width="400">
+<img src="https://github.com/squee72564/Music-Streaming/raw/main/github/login.PNG" alt="login page" width="400">
+<img src="https://github.com/squee72564/Music-Streaming/raw/main/github/collection.png" alt="music collection page" width="400">
 
 ## TODO:
 * Better CSS style for the pages
