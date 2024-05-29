@@ -1,19 +1,20 @@
-export const fetchContent = async (url, setContentState, setPrevPageState, setNextPageState) => {
+export const fetchContent = async (url, setStateContent, setStatePrevPage, setStateNextPage) => {
     try {
         const contentResponse = await fetch(url);
+
         if (contentResponse.ok) {
             const contentData = await contentResponse.json();
             
-            setContentState(contentData.results);
+            setStateContent(contentData.results);
             
-            if (setPrevPageState != null)
-                setPrevPageState(contentData.next);
+            if (setStatePrevPage != null)
+                setStatePrevPage(contentData.next);
 
-            if (setNextPageState != null)
-                setNextPageState(contentData.previous);
+            if (setStateNextPage != null)
+                setStateNextPage(contentData.previous);
         
         } else {
-            throw Error("response != ok");
+            throw Error("Response was not OK");
         }
     } catch (error) {
         console.error(`Error fetching from :${url}`, error);
