@@ -1,9 +1,15 @@
 // AlbumCreationPage.js
 import React, {useEffect, useState} from "react";
 import { getCookie } from "../services/helpers";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { Checkbox } from "../components/Checkbox";
 
 const AlbumCreationPage = () => {
+    const navigate = useNavigate();
+
+    const [genreCheckbox, setGenreCheckbox] = useState([false, false]);
+    const [artistCheckbox, setArtistCheckbox] = useState([false, false]);
+
     const [albumData,  setAlbumData] = useState({
         album_title: "",
         image: null,
@@ -48,18 +54,27 @@ const AlbumCreationPage = () => {
         });
     }
 
-    const handleGenreChange = (event) => {
-        const {value} = event.target;
+    const handleGenreChange = (indices, label) => {
+        const [checkBoxIndex] = indices;
 
-        if (value === "") return;
+        const updatedCheckboxState = [...genreCheckbox];
+        updatedCheckboxState[checkBoxIndex] = !updatedCheckboxState[checkBoxIndex];
+        setGenreCheckbox(updatedCheckboxState);
 
-        setAlbumData({
-            ...albumData,
-            genres: [
-                ...albumData.genres,
-                {"genre_name": value},
-            ].filter((value, index, array) => array.indexOf(value) === index),
-        });
+        if (updatedCheckboxState[checkBoxIndex]) {
+            setAlbumData({
+                ...albumData,
+                genres: [
+                    ...albumData.genres,
+                    { "genre_name": label },
+                ]
+            });
+        } else {
+            setAlbumData({
+                ...albumData,
+                genres: albumData.genres.filter(genre => genre.genre_name !== label)
+            });
+        }
     }
 
     const handleSongChange  = (event, index) => {
@@ -78,24 +93,35 @@ const AlbumCreationPage = () => {
 
     }
 
-    const handleArtistChange  = (event, index) => {
-        const {value} = event.target;
+    const handleArtistChange  = (indices, label) => {
+        const [checkBoxIndex, songIndex] = indices;
 
-        if (value === "") return;
-        
-        let updatedSongData = albumData.songs;
+        const updatedCheckboxState = [...artistCheckbox];
+        updatedCheckboxState[checkBoxIndex] = !updatedCheckboxState[checkBoxIndex];
+        setArtistCheckbox(updatedCheckboxState);
 
-        updatedSongData[index] = {
-            ...updatedSongData[index],
-            artists : [
-                ...updatedSongData[index].artists,
-                {"artist_name": value}
-            ].filter((value, index, array) => array.indexOf(value) === index),
-        };
+        setAlbumData(prevAlbumData => {
+            const updatedSongData = [...prevAlbumData.songs];
 
-        setAlbumData({
-            ...albumData,
-            songs: updatedSongData,
+            if (updatedCheckboxState[checkBoxIndex]) {
+                updatedSongData[songIndex] = {
+                    ...updatedSongData[songIndex],
+                    artists : [
+                        ...updatedSongData[songIndex].artists,
+                        { "artist_name": label }
+                    ]
+                };
+            } else {
+                updatedSongData[songIndex] = {
+                    ...updatedSongData[songIndex],
+                    artists : updatedSongData[songIndex].artists.filter(artist => artist.artist_name !== label)
+                };
+            }
+
+            return {
+                ...prevAlbumData,
+                songs: updatedSongData,
+            };
         });
     }
 
@@ -104,6 +130,15 @@ const AlbumCreationPage = () => {
             ...albumData,
             songs: [...albumData.songs, {song_title: "", artists: [], song_file: null}],
         });
+    }
+
+    const removeLastSongData = () => {
+        if (albumData.songs.length > 1) {
+            setAlbumData({
+                ...albumData,
+                songs: albumData.songs.slice(0, -1)
+            });
+        }
     }
 
     const handleFileUpload = (event, index) => {
@@ -123,21 +158,29 @@ const AlbumCreationPage = () => {
     }
 
     const validateSubmission = async (event) => {
-        if (albumData.album_title === "") return;
-
-        if (albumData.label.label_name === "") return;
-
-        if (albumData.genres.length === 0 ||
-            albumData.genres.some( (genre) => genre.genre_name === "" )
-        ) return;
+        event.preventDefault();
         
-        if (albumData.songs.length === 0 ||
-            albumData.songs.some( (song) => (
-                song.song_title === ""    ||
-                song.artists.length === 0 ||
-                song.artists.some( (artist) => artist.artist_name === "")
+        const { album_title, label, image, genres, songs } = albumData;
+
+        if (album_title      === "" ||
+            label.label_name === "" ||
+            genres.length    === 0  ||
+            songs.length     === 0  ||
+            image            === null )
+        {
+            return;
+        }
+
+        if (!genres.every( genre => genre.genre_name !== "") ||
+            !songs.every( song => 
+                song.song_title !== ""   &&
+                song.song_file  !== null &&
+                song.artists.length > 0  &&
+                song.artists.every(artist => artist.artist_name !== "")
             ))
-        ) return;
+        {
+            return;
+        }
 
         await handleSubmit();
     }
@@ -152,25 +195,29 @@ const AlbumCreationPage = () => {
             formData.append('label.label_name', albumData.label.label_name);
 
             albumData.genres.forEach((genre, index) => {
-                console.log(genre);
                 formData.append(`genres[${index}]`, JSON.stringify(genre));
             });
 
             albumData.songs.forEach((song, index) => {
                 const songFile = song.song_file;
                 delete song.song_file;
-                console.log(songFile);
                 formData.append(`songs[${index}]`, JSON.stringify(song));
                 formData.append(`song_file[${index}]`, songFile);
             });
 
-            await fetch('http://127.0.0.1:8000/music/api/albums/create/', {
+            const response = await fetch('http://127.0.0.1:8000/music/api/albums/create/', {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": csrfToken,
                 },
                 body: formData,
-            }).then( (data) => console.log(data));
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to submit data to server");
+            }
+
+            navigate("/music/collection/");
 
         } catch (error) {
             console.error(error);
@@ -178,68 +225,70 @@ const AlbumCreationPage = () => {
     };
 
     return (
-        <form onSubmit={validateSubmission} encType="multipart/form-data">
-            {/** Album Input */}
-            <label>
-                Album title:
-                <input type="text" name="album_title" value={albumData.album_title} onChange={handleTitleChange} />
-            </label>
-            <label>
-                Album Image:
-                <input type="file" name="image" onChange={(event) => handleImageChange(event)} accept="image/*"/>
-            </label>
-            {/** Label Input */}
-            <label>
-            Select a label:
-                <select onChange={handleLabelChange}>
-                    <option value="">Select Label</option>
-                    <option value="Test Label">Test Label</option>
-                    {/*Map over backend Labels or create label to then select?*/}
-                </select>
-                <span>{albumData.label.label_name}</span>
-            </label>
-            {/** Genres Input */}
-            <label>
-                Select to add a genre:
-                <select onChange={handleGenreChange}>
-                    <option value="">Select Genre</option>
-                    <option value="Test Genre">Test Genre</option>
-                    <option value="Test Genre 2">Test Genre 2</option>
-                    {/*Map over backend Genres or create genre to then select?*/}
-                </select>
-                {albumData.genres.map((genre, index) => (
-                    <span key={index}>{genre.genre_name}</span>
-                ))}
-            </label>
+        <form className="flex flex-col items-center space-y-8" onSubmit={validateSubmission} encType="multipart/form-data">
+            <div className="flex flex-row justify-center">
+                {/** Album Input */}
+                <label>
+                    {"Album title: "}
+                    <input type="text" name="album_title" value={albumData.album_title} onChange={handleTitleChange} />
+                </label>
+                <label>
+                    {"Album Image: "}
+                    <input type="file" name="image" onChange={handleImageChange} accept="image/*"/>
+                </label>
+            </div>
+            <div className="flex flex-row justify-center">
+                {/** Label Input */}
+                <label>
+                    {"Select a label: "}
+                    <select onChange={handleLabelChange}>
+                        <option value="">Select Label</option>
+                        <option value="Test Label">Test Label</option>
+                        {/*Map over backend Labels or create label to then select?*/}
+                    </select>
+                </label>
+                {/** Genres Input */}
+                <div>
+                    Check to add a genre:
+                    <div className="flex flex-col items-center bg-white overflow-y-auto">
+                        <Checkbox label="Test Genre 1" indices={[0]} value={genreCheckbox[0]} onChange={handleGenreChange}/>
+                        <Checkbox label="Test Genre 2" indices={[1]} value={genreCheckbox[1]} onChange={handleGenreChange}/>
+                        {/*Map over backend Labels or create label checkbox to select*/}
+                    </div>
+                </div>
+            </div>
             {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
             {albumData.songs.map((song, index) => (
-                <div key={index}>
-                    <label>
+                <div key={index} className="flex flex-row justify-center items-center space-x-3">
+                    <label className="flex flex-col">
                         Song Title:
                         <input type="text" name="song_title" value={song.song_title} onChange={(event) => handleSongChange(event, index)}/>
                     </label>
-                    <label>
-                        Select to add an artist:
-                        <select onChange={(event) => handleArtistChange(event, index)}>
-                            <option value="">Select Artist</option>
-                            <option value="Example Artist">Example Artist</option>
-                            <option value="Example Artist 2">Example Artist 2</option>
-                            {/*Map over backend Artists or create artist to then select?*/}
-                        </select>
-                        {albumData.songs[index].artists.map((artist, artist_idx) => (
-                            <span key={artist_idx}>{artist.artist_name}</span>
-                        ))}
-                    </label>
-                    <label>
+                    <div>
+                        Check to add a artist:
+                        <div className="flex flex-col items-center bg-white overflow-y-auto">
+                            <Checkbox label="Test Artist 1" indices={[0, index]} value={artistCheckbox[0]} onChange={handleArtistChange}/>
+                            <Checkbox label="Test Artist 2" indices={[1, index]} value={artistCheckbox[1]} onChange={handleArtistChange}/>
+                            {/*Map over backend Artists or create label checkbox to select?*/}
+                        </div>
+                    </div>
+                    <div className="flex flex-col">
                         Upload Song File:
-                        <input type="file" name={`${song.song_file ? song.song_file : ""}`} onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
-                    </label>
+                        <label>
+                            <input type="file" onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
+                        </label>
+                    </div>
                 </div>
             ))}
-            <button type="button" onClick={addNewSongData}>
-                Add New Song
-            </button>
-            <button type="submit">Submit</button>
+            <div className="flex flex-row justify-center">
+                <button className="rounded bg-gray-400 p-3" type="button" onClick={addNewSongData}>
+                    Add New Song
+                </button>
+                <button className="rounded bg-gray-400 p-3" type="button" onClick={removeLastSongData}>
+                    Remove Last Song
+                </button>
+                <button className="rounded bg-gray-400 p-3" type="submit">Submit</button>
+            </div>
         </form>
     )
 }
