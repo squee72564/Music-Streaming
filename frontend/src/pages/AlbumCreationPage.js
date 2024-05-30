@@ -3,13 +3,18 @@ import React, {useEffect, useState} from "react";
 import { getCookie } from "../services/helpers";
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from "../components/Checkbox";
+import { fetchPaginatedContent } from "../services/api"
 
 const AlbumCreationPage = () => {
     const navigate = useNavigate();
 
-    const [genreCheckbox, setGenreCheckbox] = useState([false, false]);
-    const [artistCheckbox, setArtistCheckbox] = useState([false, false]);
-
+    const [genreCheckbox, setGenreCheckbox] = useState([]);
+    const [artistCheckbox, setArtistCheckbox] = useState([]);
+    
+    const [labels, setLabels] = useState(null);
+    const [artists, setArtists] = useState(null);
+    const [genres, setGenres] = useState(null);
+    
     const [albumData,  setAlbumData] = useState({
         album_title: "",
         image: null,
@@ -25,6 +30,44 @@ const AlbumCreationPage = () => {
             },
         ],
     });
+
+    useEffect(() => {    
+        const fetchAllData = async () => {
+          try {
+                await Promise.all([
+                fetchPaginatedContent(
+                    'http://127.0.0.1:8000/music/api/labels/?limit=100',
+                    setLabels,
+                    null,
+                    null
+                ),
+                fetchPaginatedContent(
+                    'http://127.0.0.1:8000/music/api/artists/?limit=100',
+                    setArtists,
+                    null,
+                    null
+                ),
+                fetchPaginatedContent(
+                    'http://127.0.0.1:8000/music/api/genres/?limit=100',
+                    setGenres,
+                    null,
+                    null
+                ),
+                ]).then(() => {
+                    if (genres)
+                        setGenreCheckbox(new Array(genres.length).fill(false));
+                    if (artists)
+                        setArtistCheckbox(new Array(artists.length).fill(false));
+                })
+
+          } catch (error) {
+            console.error("Error fetching data", error);
+          }
+        }
+
+        fetchAllData();
+        
+    }, []);
 
     const handleTitleChange = (event) => {
         const {value} = event.target;
@@ -46,6 +89,9 @@ const AlbumCreationPage = () => {
 
     const handleLabelChange = (event) => {
         const {value} = event.target;
+
+        if (value == "") return;
+
         setAlbumData({
             ...albumData,
             label: {
@@ -241,17 +287,18 @@ const AlbumCreationPage = () => {
                     Select a label:
                     <select onChange={handleLabelChange}>
                         <option value="">Select Label</option>
-                        <option value="Test Label">Test Label</option>
-                        {/*Map over backend Labels or create label to then select?*/}
+                        {labels && labels.map((label, index) => {
+                            return <option key={index} value={label.label_name}>{label.label_name}</option>
+                        })}
                     </select>
                 </label>
                 {/** Genres Input */}
                 <div>
                     Check to add a genre:
                     <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
-                        <Checkbox label="Test Genre 1" indices={[0]} value={genreCheckbox[0]} onChange={handleGenreChange}/>
-                        <Checkbox label="Test Genre 2" indices={[1]} value={genreCheckbox[1]} onChange={handleGenreChange}/>
-                        {/*Map over backend Labels or create label checkbox to select*/}
+                        {genres && genres.map((genre, index) => (
+                            <Checkbox key={index} label={genre.genre_name} indices={[index]} value={genreCheckbox[index]} onChange={handleGenreChange}/>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -265,9 +312,9 @@ const AlbumCreationPage = () => {
                     <div>
                         Check to add a artist:
                         <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
-                            <Checkbox label="Test Artist 1" indices={[0, index]} value={artistCheckbox[0]} onChange={handleArtistChange}/>
-                            <Checkbox label="Test Artist 2" indices={[1, index]} value={artistCheckbox[1]} onChange={handleArtistChange}/>
-                            {/*Map over backend Artists or create label checkbox to select?*/}
+                            {artists && artists.map((artist, artist_index) => (
+                                <Checkbox key={artist_index} label={artist.artist_name} indices={[artist_index, index]} value={artistCheckbox[artist_index]} onChange={handleArtistChange}/>
+                            ))}
                         </div>
                     </div>
                     <label className="flex flex-col">
