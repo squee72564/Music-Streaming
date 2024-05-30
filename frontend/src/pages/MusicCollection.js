@@ -1,6 +1,7 @@
 // ProfilepPage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchPaginatedContent } from '../services/api';
 
 const MusicCollection = () => {
 
@@ -12,50 +13,28 @@ const MusicCollection = () => {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
 
-  const fetchAlbums = async (url) => {
-    try {
-      const albumResponse = await fetch(url);
-      if (albumResponse.ok) {
-        const albumData = await albumResponse.json();
-        setAlbums(albumData.results); 
-        setNextPage(albumData.next);
-        setPrevPage(albumData.previous);
-      } else {
-        console.error("Albums API request failed.");
-      }
-    } catch (error) {
-      console.error("Error fetching albums:", error);
-    }
-  };
-
-  useEffect(() => {
-
-    const fetchLabels = async () => {
-      const labelResponse = await fetch("http://127.0.0.1:8000/music/api/labels/");
-      if (labelResponse.ok) {
-        const labelData = await labelResponse.json();
-        setLabels(labelData.results);
-      } else {
-        console.error("Labels API request failed.");
-      }
-    };
-
-    const fetchGenres = async () => {
-      const genreResponse = await fetch("http://127.0.0.1:8000/music/api/genres/");
-      if (genreResponse.ok) {
-        const genreData = await genreResponse.json();
-        setGenres(genreData.results);
-      } else {
-        console.error("Genres API request failed.");
-      }
-    };
-    
+  useEffect(() => {    
     const fetchAllData = async () => {
       try {
         await Promise.all([
-          fetchAlbums('http://127.0.0.1:8000/music/api/albums/'),
-          fetchLabels(),
-          fetchGenres(),
+          fetchPaginatedContent(
+            'http://127.0.0.1:8000/music/api/albums/',
+            setAlbums,
+            setNextPage,
+            setPrevPage,
+          ),
+          fetchPaginatedContent(
+            'http://127.0.0.1:8000/music/api/labels/',
+            setLabels,
+            null,
+            null
+          ),
+          fetchPaginatedContent(
+            'http://127.0.0.1:8000/music/api/genres/',
+            setGenres,
+            null,
+            null
+          ),
         ]);
       } catch (error) {
         console.error("Error fetching data", error);
@@ -69,9 +48,14 @@ const MusicCollection = () => {
     navigate(`/music/collection/${albumId}`);
   };
 
-  const fetchPageData = (url) => {
+  const fetchAlbumPageData = (url) => {
     if (url) {
-      fetchAlbums(url);
+      fetchPaginatedContent(
+        url,
+        setAlbums,
+        setNextPage,
+        setPrevPage,
+      );
     }
   }
 
@@ -98,11 +82,11 @@ const MusicCollection = () => {
           <div className='flex flex-col border-2 border-black'>
             <h2 className='font-bold'>Label</h2>
             <ul className='rounded overflow-y-auto bg-white h-24 '>
-              <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</li>
+              <li className='m-2' onClick={() => fetchAlbumPageData('http://127.0.0.1:8000/music/api/albums/')}>All labels</li>
               {labels && labels.map((label) => (
                 <li key={label.id}
                     className='m-2'
-                    onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}
+                    onClick={() => fetchAlbumPageData(`http://127.0.0.1:8000/music/api/albums/?label=${label.id}`)}
                 >
                   {label.label_name}
                 </li>
@@ -112,11 +96,11 @@ const MusicCollection = () => {
           <div className='flex flex-col border-2 border-black'>
             <h2 className='font-bold'>Genre</h2>
             <ul className='rounded overflow-y-auto bg-white h-24 '>
-              <li className='m-2' onClick={() => fetchPageData('http://127.0.0.1:8000/music/api/albums/')}>All Genres</li>
+              <li className='m-2' onClick={() => fetchAlbumPageData('http://127.0.0.1:8000/music/api/albums/')}>All Genres</li>
               {genres && genres.map((genre) => (
                 <li key={genre.id}
                     className='m-2'
-                    onClick={() => fetchPageData(`http://127.0.0.1:8000/music/api/albums/?genres=${genre.id}`)}
+                    onClick={() => fetchAlbumPageData(`http://127.0.0.1:8000/music/api/albums/?genres=${genre.id}`)}
                 >
                   {genre.genre_name}
                 </li>
