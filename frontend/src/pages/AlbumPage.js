@@ -1,31 +1,21 @@
 // AlbumPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
+import { fetchContent } from "../services/api";
 
 const AlbumPage = () => {
   const [albumInfo, setAlbumInfo] = useState(null);
+  const [error, setError] = useState(false);
   const { albumId } = useParams();
   const apiUrl = `http://127.0.0.1:8000/music/api/albums/${albumId}/`;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const albumResponse = await fetch(apiUrl);
-
-        if (albumResponse.status === 404) {
-          setAlbumInfo({ notFound: true }); 
-        } else if (albumResponse.ok) {
-          const albumData = await albumResponse.json();
-          setAlbumInfo(albumData);
-        } else {
-          console.error("Album API requests failed.");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-      
-    fetchData();
+    try {
+      fetchContent(apiUrl, setAlbumInfo, null, null);
+    } catch (error) {
+      console.error(error);
+      setError(true);
+    }
   }, [apiUrl]);
 
   if (albumInfo === null) {
@@ -34,7 +24,7 @@ const AlbumPage = () => {
     );
   }
 
-  if (albumInfo.notFound) {
+  if (error.notFound) {
     return <h1>Album not found.</h1>;
   }
 
