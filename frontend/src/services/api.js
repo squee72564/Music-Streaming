@@ -1,4 +1,4 @@
-export const fetchContent = async (url, setStateContent, setStatePrevPage, setStateNextPage) => {
+export const fetchPaginatedContent = async (url, setStateContent, setStatePrevPage, setStateNextPage) => {
     try {
         const contentResponse = await fetch(url);
 
@@ -14,9 +14,26 @@ export const fetchContent = async (url, setStateContent, setStatePrevPage, setSt
                 setStateNextPage(contentData.previous);
         
         } else {
-            throw Error("Response was not OK");
+            throw new Error("Response was not OK");
         }
     } catch (error) {
-        console.error(`Error fetching from :${url}`, error);
+        throw new Error(`Error fetching from :${url}`, error);
+    }
+};
+
+export const fetchContent = async (url, setStateContent, setStatePrevPage, setStateNextPage) => {
+    try {
+        const contentResponse = await fetch(url);
+
+        if (contentResponse.ok) {
+            const contentData = await contentResponse.json();
+            
+            setStateContent(contentData);
+
+        } else {
+            throw new Error("Response was not OK");
+        }
+    } catch (error) {
+        throw new Error(`Error fetching from :${url}`, error);
     }
 };
