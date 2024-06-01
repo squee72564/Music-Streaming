@@ -1,9 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import { getCookie } from "../services/helpers";
 
 const SingleFieldModal = (props) => {
-  const apiUri = `http://127.0.0.1:8000/music/api/${props.modelName.toLowerCase()}s/create/`;
   const [isOpen, setIsOpen] = useState(false);
   const [field, setField] = useState("");
   const [error, setError] = useState(null);
@@ -17,29 +15,11 @@ const SingleFieldModal = (props) => {
     event.preventDefault();
 
     try {
-      const csrfToken = getCookie("csrftoken");
-      console.log(csrfToken);
-
-      const response = await fetch(apiUri, {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": csrfToken,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          [`${props.modelName.toLowerCase()}_name`]: field,
-        }),
-      });
-
-      if (response.ok) {
-        console.log(field);
-        props.onUpdate(field);
-        setField("");
-        setError(null);
-        setIsOpen(false);
-      } else {
-        throw new Error(`${response.statusText}`);
-      }
+      console.log(field);
+      props.onUpdate(field);
+      setField("");
+      setError(null);
+      setIsOpen(false);
     } catch (error) {
       console.log(error.message);
       setError(error.message);
