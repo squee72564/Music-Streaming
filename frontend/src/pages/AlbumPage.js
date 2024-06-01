@@ -1,13 +1,15 @@
 // AlbumPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { fetchContent } from "../services/api";
+
+import { fetchContent } from "../utils/api";
+import { API_URLS } from "../utils/apiConfig";
 
 const AlbumPage = () => {
   const [albumInfo, setAlbumInfo] = useState(null);
   const [error, setError] = useState(false);
   const { albumId } = useParams();
-  const apiUrl = `http://127.0.0.1:8000/music/api/albums/${albumId}/`;
+  const apiUrl = `${API_URLS.ALBUMS}${albumId}/`;
 
   useEffect(() => {
     try {

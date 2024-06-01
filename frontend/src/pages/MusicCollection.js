@@ -1,7 +1,9 @@
 // ProfilepPage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchPaginatedContent } from "../services/api";
+
+import { fetchPaginatedContent } from "../utils/api";
+import { API_URLS } from "../utils/apiConfig";
 
 const MusicCollection = () => {
   const navigate = useNavigate();
@@ -19,23 +21,13 @@ const MusicCollection = () => {
       try {
         await Promise.all([
           fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/albums/",
+            API_URLS.ALBUMS,
             setAlbums,
             setNextPage,
             setPrevPage
           ),
-          fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/labels/",
-            setLabels,
-            null,
-            null
-          ),
-          fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/genres/",
-            setGenres,
-            null,
-            null
-          ),
+          fetchPaginatedContent(API_URLS.LABELS, setLabels, null, null),
+          fetchPaginatedContent(API_URLS.GENRES, setGenres, null, null),
         ]);
       } catch (error) {
         console.error("Error fetching data", error);
@@ -106,9 +98,7 @@ const MusicCollection = () => {
             <ul className="overflow-y-auto bg-white h-32">
               <li
                 className="m-2 hover:bg-gray-200"
-                onClick={() =>
-                  fetchAlbumPageData("http://127.0.0.1:8000/music/api/albums/")
-                }
+                onClick={() => fetchAlbumPageData(API_URLS.ALBUMS)}
               >
                 All labels
               </li>
@@ -118,9 +108,7 @@ const MusicCollection = () => {
                     key={label.id}
                     className="m-2 hover:bg-gray-200"
                     onClick={() =>
-                      fetchAlbumPageData(
-                        `http://127.0.0.1:8000/music/api/albums/?label=${label.id}`
-                      )
+                      fetchAlbumPageData(`${API_URLS.ALBUMS}?label=${label.id}`)
                     }
                   >
                     {label.label_name}
@@ -133,9 +121,7 @@ const MusicCollection = () => {
             <ul className="overflow-y-auto bg-white h-32">
               <li
                 className="m-2 hover:bg-gray-200"
-                onClick={() =>
-                  fetchAlbumPageData("http://127.0.0.1:8000/music/api/albums/")
-                }
+                onClick={() => fetchAlbumPageData(API_URLS.ALBUMS)}
               >
                 All Genres
               </li>
@@ -146,7 +132,7 @@ const MusicCollection = () => {
                     className="m-2 hover:bg-gray-200"
                     onClick={() =>
                       fetchAlbumPageData(
-                        `http://127.0.0.1:8000/music/api/albums/?genres=${genre.id}`
+                        `${API_URLS.ALBUMS}?genres=${genre.id}`
                       )
                     }
                   >

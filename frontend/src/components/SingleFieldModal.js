@@ -15,14 +15,13 @@ const SingleFieldModal = (props) => {
     event.preventDefault();
 
     try {
-      console.log(field);
       props.onUpdate(field);
       setField("");
       setError(null);
       setIsOpen(false);
     } catch (error) {
-      console.log(error.message);
-      setError(error.message);
+      console.log(error);
+      setError(error);
     }
   };
 

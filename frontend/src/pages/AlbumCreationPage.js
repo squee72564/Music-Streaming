@@ -1,10 +1,13 @@
 // AlbumCreationPage.js
 import React, { useEffect, useState } from "react";
-import { getCookie } from "../services/helpers";
 import { useNavigate } from "react-router-dom";
+
 import { Checkbox } from "../components/Checkbox";
 import SingleFieldModal from "../components/SingleFieldModal";
-import { fetchPaginatedContent } from "../services/api";
+
+import { fetchPaginatedContent } from "../utils/api";
+import { API_URLS } from "../utils/apiConfig";
+import { getCookie } from "../utils/helpers";
 
 const AlbumCreationPage = () => {
   const navigate = useNavigate();
@@ -37,19 +40,19 @@ const AlbumCreationPage = () => {
       try {
         await Promise.all([
           fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/labels/?limit=100",
+            `${API_URLS.LABELS}?limit=100`,
             setLabels,
             null,
             null
           ),
           fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/artists/?limit=100",
+            `${API_URLS.ARTISTS}?limit=100`,
             setArtists,
             null,
             null
           ),
           fetchPaginatedContent(
-            "http://127.0.0.1:8000/music/api/genres/?limit=100",
+            `${API_URLS.GENRES}?limit=100`,
             setGenres,
             null,
             null
@@ -262,16 +265,13 @@ const AlbumCreationPage = () => {
         formData.append(`song_file[${index}]`, songFile);
       });
 
-      const response = await fetch(
-        "http://127.0.0.1:8000/music/api/albums/create/",
-        {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${API_URLS.ALBUMS}create/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} : ${response.statusText}`);
