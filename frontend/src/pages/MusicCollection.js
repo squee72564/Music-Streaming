@@ -96,14 +96,14 @@ const MusicCollection = () => {
               </div>
             ))
           ) : (
-            <span>No Albums</span>
+            <span className="font-bold">No albums to show</span>
           )}
         </div>
         <h1 className="text-xl font-bold m-3">Filter by...</h1>
         <div className="flex flex-row justify-center space-x-10">
           <div className="flex flex-col border-2 bg-gray-400 border-black">
             <h2 className="font-bold">Label</h2>
-            <ul className="rounded overflow-y-auto bg-white h-32">
+            <ul className="overflow-y-auto bg-white h-32">
               <li
                 className="m-2 hover:bg-gray-200"
                 onClick={() =>
@@ -130,7 +130,7 @@ const MusicCollection = () => {
           </div>
           <div className="flex flex-col border-2 bg-gray-400 border-black">
             <h2 className="font-bold">Genre</h2>
-            <ul className="rounded overflow-y-auto bg-white h-32">
+            <ul className="overflow-y-auto bg-white h-32">
               <li
                 className="m-2 hover:bg-gray-200"
                 onClick={() =>
