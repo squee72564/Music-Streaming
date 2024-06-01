@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tailwind": "npx tailwindcss -i ../backend/static_files/css/input.css -o ../backend/static_files/css/styles.css --watch",
+    "tailwind-dev": "npx tailwindcss -i ../backend/static_files/css/input.css -o ../backend/static_files/css/styles.css --watch",
+    "tailwind-prod": "npx tailwindcss -i ../backend/static_files/css/input.css -o ../backend/static_files/css/styles.css",
     "webpack-dev": "webpack --mode development --watch",
-    "webpack-prod": "webpack --mode production --watch"
+    "webpack-prod": "webpack --mode production"
   },
   "keywords": [],
   "author": "",
