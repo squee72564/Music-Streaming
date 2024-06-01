@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import { getCookie } from "../services/helpers";
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from "../components/Checkbox";
+import SingleFieldModal from "../components/SingleFieldModal";
 import { fetchPaginatedContent } from "../services/api"
 
 const AlbumCreationPage = () => {
@@ -11,9 +12,9 @@ const AlbumCreationPage = () => {
     const [genreCheckbox, setGenreCheckbox] = useState([]);
     const [artistCheckbox, setArtistCheckbox] = useState([]);
     
-    const [labels, setLabels] = useState(null);
-    const [artists, setArtists] = useState(null);
-    const [genres, setGenres] = useState(null);
+    const [labels, setLabels] = useState([]);
+    const [artists, setArtists] = useState([]);
+    const [genres, setGenres] = useState([]);
     
     const [albumData,  setAlbumData] = useState({
         album_title: "",
@@ -34,7 +35,7 @@ const AlbumCreationPage = () => {
     useEffect(() => {    
         const fetchAllData = async () => {
           try {
-                await Promise.all([
+            await Promise.all([
                 fetchPaginatedContent(
                     'http://127.0.0.1:8000/music/api/labels/?limit=100',
                     setLabels,
@@ -53,13 +54,12 @@ const AlbumCreationPage = () => {
                     null,
                     null
                 ),
-                ]).then(() => {
-                    if (genres)
-                        setGenreCheckbox(new Array(genres.length).fill(false));
-                    if (artists)
-                        setArtistCheckbox(new Array(artists.length).fill(false));
-                })
-
+            ]).then(() => {
+                if (genres)
+                    setGenreCheckbox(new Array(genres.length).fill(false));
+                if (artists)
+                    setArtistCheckbox(new Array(artists.length).fill(false));
+            })
           } catch (error) {
             console.error("Error fetching data", error);
           }
@@ -68,6 +68,18 @@ const AlbumCreationPage = () => {
         fetchAllData();
         
     }, []);
+
+    const handleLabelUpdate = (newLabel) => {
+        setLabels([...labels, {"label_name":newLabel}]);
+    };
+
+    const handleArtistUpdate = (newArtist) => {
+        setArtists([...artists, {"artist_name":newArtist}]);
+    };
+
+    const handleGenreUpdate = (newGenre) => {
+        setGenres([...genres, {"genre_name":newGenre}]);
+    };
 
     const handleTitleChange = (event) => {
         const {value} = event.target;
@@ -269,70 +281,135 @@ const AlbumCreationPage = () => {
     };
 
     return (
-        <form className="flex flex-col rounded bg-gray-300 justify-center items-center space-y-8 w-4/6 ml-auto mr-auto mt-20 p-8" onSubmit={validateSubmission} encType="multipart/form-data">
-            <div className="flex flex-row justify-center items-center space-x-8">
-                {/** Album Input */}
-                <label className="flex flex-col">
-                    Album title:
-                    <input type="text" name="album_title" value={albumData.album_title} onChange={handleTitleChange} />
-                </label>
-                <label className="flex flex-col">
-                    Album Image:
-                    <input type="file" name="image" onChange={handleImageChange} accept="image/*"/>
-                </label>
+        <>
+            <div className="flex justify-center items-center my-10 space-x-8">
+                <SingleFieldModal
+                    modelName={"Label"}
+                    text={"Label name"}
+                    buttonText={"Add New Label"}
+                    uriLabel={"labels"}
+                    apiField={"label_name"}
+                    onUpdate={handleLabelUpdate}
+                />
+                <SingleFieldModal
+                    modelName={"Artist"}
+                    text={"Artist name"}
+                    buttonText={"Add New Artist"}
+                    uriLabel={"artists"}
+                    apiField={"artist_name"}
+                    onUpdate={handleArtistUpdate}
+                />
+                <SingleFieldModal
+                    modelName={"Genre"}
+                    text={"Genre name"}
+                    buttonText={"Add New Genre"}
+                    uriLabel={"genres"}
+                    apiField={"genre_name"}
+                    onUpdate={handleGenreUpdate}
+                />
             </div>
-            <div className="flex flex-row justify-center items-center space-x-12 ">
-                {/** Label Input */}
-                <label className="flex flex-col">
-                    Select a label:
-                    <select onChange={handleLabelChange}>
-                        <option value="">Select Label</option>
-                        {labels && labels.map((label, index) => {
-                            return <option key={index} value={label.label_name}>{label.label_name}</option>
-                        })}
-                    </select>
-                </label>
-                {/** Genres Input */}
-                <div>
-                    Check to add a genre:
-                    <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
-                        {genres && genres.map((genre, index) => (
-                            <Checkbox key={index} label={genre.genre_name} indices={[index]} value={genreCheckbox[index]} onChange={handleGenreChange}/>
-                        ))}
-                    </div>
-                </div>
-            </div>
-            {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
-            {albumData.songs.map((song, index) => (
-                <div key={index} className="flex flex-row justify-center items-center space-x-8">
+            <form
+                className="flex flex-col rounded bg-gray-400 justify-center items-center space-y-8 w-3/6 ml-auto mr-auto mt-20 p-8"
+                onSubmit={validateSubmission}
+                encType="multipart/form-data"
+            >
+                <div className="flex flex-row justify-center items-center space-x-8">
+                    {/** Album Input */}
                     <label className="flex flex-col">
-                        Song Title:
-                        <input type="text" name="song_title" value={song.song_title} onChange={(event) => handleSongChange(event, index)}/>
+                        <span className="font-bold">Album title:</span>
+                        <input type="text" name="album_title" value={albumData.album_title} onChange={handleTitleChange} />
                     </label>
+                    <label className="flex flex-col">
+                        <span className="font-bold">Album Image:</span>
+                        <input type="file" name="image" onChange={handleImageChange} accept="image/*"/>
+                    </label>
+                </div>
+                <div className="flex flex-row justify-center items-center space-x-12 ">
+                    {/** Label Input */}
+                    <label className="flex flex-col">
+                        <span className="font-bold">Select a label:</span>
+                        <select onChange={handleLabelChange}>
+                            <option value="">Select Label</option>
+                            {labels && labels.map((label, index) => {
+                                return <option key={index} value={label.label_name}>{label.label_name}</option>
+                            })}
+                        </select>
+                    </label>
+                    {/** Genres Input */}
                     <div>
-                        Check to add a artist:
-                        <div className="flex flex-col items-center bg-white overflow-y-auto h-12">
-                            {artists && artists.map((artist, artist_index) => (
-                                <Checkbox key={artist_index} label={artist.artist_name} indices={[artist_index, index]} value={artistCheckbox[artist_index]} onChange={handleArtistChange}/>
+                        <span className="font-bold">Check to add a genre:</span>
+                        <div className="flex flex-col items-left bg-white overflow-y-auto px-3 h-16">
+                            {genres && genres.map((genre, index) => (
+                                <Checkbox
+                                    key={index}
+                                    label={genre.genre_name}
+                                    indices={[index]}
+                                    value={genreCheckbox[index]}
+                                    onChange={handleGenreChange}
+                                />
                             ))}
                         </div>
                     </div>
-                    <label className="flex flex-col">
-                        Upload Song File:
-                        <input type="file" onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
-                    </label>
                 </div>
-            ))}
-            <div className="flex flex-row justify-center space-x-8">
-                <button className="rounded bg-gray-400 p-2" type="button" onClick={addNewSongData}>
-                    Add New Song
-                </button>
-                <button className="rounded bg-gray-400 p-2" type="button" onClick={removeLastSongData}>
-                    Remove Last Song
-                </button>
-                <button className="rounded bg-gray-400 p-2" type="submit">Submit</button>
-            </div>
-        </form>
+                {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
+                <div className="flex flex-col rounded items-center bg-gray-300 overflow-y-auto px-6 h-40">
+                    {albumData.songs.map((song, index) => (
+                        <div key={index} className="flex flex-row justify-center items-center space-x-8 py-6">
+                            <label className="flex flex-col">
+                                <span className="font-bold">{`Song ${index+1} Title:`}</span>
+                                <input
+                                    type="text"
+                                    name="song_title"
+                                    value={song.song_title}
+                                    onChange={(event) => handleSongChange(event, index)}
+                                />
+                            </label>
+                            <div>
+                                <span className="font-bold">Check to add a artist:</span>
+                                <div className="flex flex-col items-left bg-white overflow-y-auto px-3 h-16">
+                                    {artists && artists.map((artist, artist_index) => (
+                                        <Checkbox
+                                            key={artist_index}
+                                            label={artist.artist_name}
+                                            indices={[artist_index, index]}
+                                            value={artistCheckbox[artist_index]}
+                                            onChange={handleArtistChange}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <label className="flex flex-col">
+                                <span className="font-bold">{`Upload Song ${index+1} File:`}</span>
+                                <input type="file" onChange={(event) => handleFileUpload(event, index)} accept="audio/*"/>
+                            </label>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex flex-row justify-center space-x-8">
+                    <button
+                        className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        type="button"
+                        onClick={addNewSongData}
+                    >
+                        Add New Song
+                    </button>
+                    <button
+                        className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        type="button"
+                        onClick={removeLastSongData}
+                    >
+                        Remove Last Song
+                    </button>
+                    <button 
+                        className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        type="submit"
+                    >
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </>
+        
     )
 }
 
