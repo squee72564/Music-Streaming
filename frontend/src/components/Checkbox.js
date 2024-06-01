@@ -1,8 +1,8 @@
 export const Checkbox = ({label, indices, value, onChange}) => {
     return (
-        <label>
+        <label className="space-x-2">
             <input type="checkbox" checked={value} onChange={(event) => onChange(indices, label)}/>
-            {label}
+            <span>{label}</span>
         </label>
     );
 };
