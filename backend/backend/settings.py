@@ -94,10 +94,30 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+# To use SQLite3 uncomment this section
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# To use PostgreSQL uncomment this section \
+# .pgpass and .pg_service.conf files need to be set up properly for this to work. \
+# See: \
+# https://docs.djangoproject.com/en/5.0/ref/databases/#postgresql-notes \
+# https://www.postgresql.org/docs/current/libpq-pgservice.html \
+# https://www.postgresql.org/docs/current/libpq-pgpass.html
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "db_test",
+        "OPTIONS": {
+            "service": "my_service",
+        },
     }
 }
 
