@@ -24,16 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-29ro#y(-fbvyd4v5)r)brq!wc50ghh28au)x^!ktf(l0i)w-py"
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-29ro#y(-fbvyd4v5)r)brq!wc50ghh28au)x^!ktf(l0i)w-py")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=1))
 
-ALLOWED_HOSTS = ["*"] # FOR DEVELOPMENT ONLY
 
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", ["*"])
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -93,31 +93,14 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-
-# To use SQLite3 uncomment this section
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-# To use PostgreSQL uncomment this section \
-# .pgpass and .pg_service.conf files need to be set up properly for this to work. \
-# See: \
-# https://docs.djangoproject.com/en/5.0/ref/databases/#postgresql-notes \
-# https://www.postgresql.org/docs/current/libpq-pgservice.html \
-# https://www.postgresql.org/docs/current/libpq-pgpass.html
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_test",
-        "OPTIONS": {
-            "service": "my_service",
-        },
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
