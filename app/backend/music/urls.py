@@ -6,17 +6,17 @@ urlpatterns = [
     # React
     path(
         "collection/",
-        TestReactView.as_view(),
+        ReactView.as_view(),
         name="music_collection_page",
     ),
     path(
         "collection/<int:id>",
-        TestReactView.as_view(),
+        ReactView.as_view(),
         name="album_view",
     ),
     path(
         "create/",
-        TestReactView.as_view(),
+        ReactView.as_view(),
         name="album_create_view",
     ),
     # Albums
