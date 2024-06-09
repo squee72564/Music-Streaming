@@ -28,6 +28,9 @@ You can deploy this application you will need docker-compose and npm installed.
 
 - docker-compose up -d --build
 
+- Note: If the web-app service for the container does not deploy properly with the error `"/src/app/entrypoint.sh does not exist"` you may need to normalize the line endings from CRLF to LF.
+	- Git may automatically make the conversion to CRLF when cloning/pulling to a windows machine and it may cause issues.
+
 5. Next we want to flush and migrate the database so it is set up properly:
 
 - `docker-compose exec web-app python manage.py flush --no-input`
