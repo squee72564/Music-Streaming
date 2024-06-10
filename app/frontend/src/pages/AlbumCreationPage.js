@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { Checkbox } from "../components/Checkbox";
 import SingleFieldModal from "../components/SingleFieldModal";
 
-import { fetchPaginatedContent } from "../utils/api";
 import { API_URLS } from "../utils/apiConfig";
 import { getCookie } from "../utils/helpers";
 
@@ -35,52 +34,25 @@ const AlbumCreationPage = () => {
     ],
   });
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        await Promise.all([
-          fetchPaginatedContent(
-            `${API_URLS.LABELS}?limit=100`,
-            setLabels,
-            null,
-            null
-          ),
-          fetchPaginatedContent(
-            `${API_URLS.ARTISTS}?limit=100`,
-            setArtists,
-            null,
-            null
-          ),
-          fetchPaginatedContent(
-            `${API_URLS.GENRES}?limit=100`,
-            setGenres,
-            null,
-            null
-          ),
-        ]).then(() => {
-          setGenreCheckbox(genres ? new Array(genres.length).fill(false) : []);
-          setArtistCheckbox(
-            artists ? [new Array(artists.length).fill(false)] : []
-          );
-        });
-      } catch (error) {
-        console.error("Error fetching data", error);
-      }
-    };
-
-    fetchAllData();
-  }, []);
-
   const handleLabelUpdate = (newLabel) => {
     setLabels([...labels, { label_name: newLabel }]);
   };
 
   const handleArtistUpdate = (newArtist) => {
-    setArtists([...artists, { artist_name: newArtist }]);
+    setArtists( (prevState) => {
+      const uniqueArtists = new Set([...prevState, { artist_name: newArtist }].map(JSON.stringify));
+      return Array.from(uniqueArtists).map(JSON.parse);
+    });
+
+    setArtistCheckbox([
+      ...artistCheckbox,
+      new Array(artists.length).fill(false),
+    ]);
   };
 
   const handleGenreUpdate = (newGenre) => {
     setGenres([...genres, { genre_name: newGenre }]);
+    setGenreCheckbox(...genreCheckbox, false);
   };
 
   const handleTitleChange = (event) => {
@@ -117,9 +89,11 @@ const AlbumCreationPage = () => {
   const handleGenreChange = (indices, label) => {
     const [checkBoxIndex] = indices;
 
-    const updatedCheckboxState = [...genreCheckbox];
-    updatedCheckboxState[checkBoxIndex] = !updatedCheckboxState[checkBoxIndex];
-    setGenreCheckbox(updatedCheckboxState);
+    setGenreCheckbox( (prevState) => {
+      const updatedCheckboxState = [...prevState];
+      updatedCheckboxState[checkBoxIndex] = !prevState[checkBoxIndex];
+      return updatedCheckboxState;
+    });
 
     if (updatedCheckboxState[checkBoxIndex]) {
       setAlbumData({
@@ -150,12 +124,14 @@ const AlbumCreationPage = () => {
   const handleArtistChange = (indices, label) => {
     const [checkBoxIndex, songIndex] = indices;
 
-    const updatedCheckboxState = [...artistCheckbox];
+    setArtistCheckbox( (prevState) => {
+      const updatedCheckboxState = [...prevState];
 
-    updatedCheckboxState[songIndex][checkBoxIndex] =
-      !updatedCheckboxState[songIndex][checkBoxIndex];
+      updatedCheckboxState[songIndex][checkBoxIndex] =
+        !updatedCheckboxState[songIndex][checkBoxIndex];
 
-    setArtistCheckbox(updatedCheckboxState);
+      return updatedCheckboxState;
+    });
 
     setAlbumData((prevAlbumData) => {
       const updatedSongData = [...prevAlbumData.songs];
@@ -232,11 +208,11 @@ const AlbumCreationPage = () => {
     const { album_title, label, image, genres, songs } = albumData;
 
     if (
-      album_title === "" ||
-      label.label_name === "" ||
-      genres.length === 0 ||
-      songs.length === 0 ||
-      image === null
+      album_title      === ""   ||
+      label.label_name === ""   ||
+      genres.length    === 0    ||
+      songs.length     === 0    ||
+      image            === null
     ) {
       return;
     }
@@ -245,7 +221,7 @@ const AlbumCreationPage = () => {
       !genres.every((genre) => genre.genre_name !== "") ||
       !songs.every(
         (song) =>
-          song.song_title !== "" &&
+          song.song_title !== ""  &&
           song.song_file !== null &&
           song.artists.length > 0 &&
           song.artists.every((artist) => artist.artist_name !== "")
@@ -297,10 +273,11 @@ const AlbumCreationPage = () => {
 
   return (
     <>
+      <p className="text-center font-bold">Click the buttons below to add a Label, Artist, or Genre for this Album.</p>
       <div className="flex justify-center items-center m-5 space-x-8">
-        <SingleFieldModal modelName={"Label"} onUpdate={handleLabelUpdate} />
-        <SingleFieldModal modelName={"Artist"} onUpdate={handleArtistUpdate} />
-        <SingleFieldModal modelName={"Genre"} onUpdate={handleGenreUpdate} />
+        <SingleFieldModal modelName={"Label"} url={`${API_URLS.LABELS}?limit=100`} onUpdate={handleLabelUpdate} />
+        <SingleFieldModal modelName={"Artist"} url={`${API_URLS.ARTISTS}?limit=100`} onUpdate={handleArtistUpdate} />
+        <SingleFieldModal modelName={"Genre"} url={`${API_URLS.GENRES}?limit=100`} onUpdate={handleGenreUpdate} />
       </div>
       <form
         className="flex flex-col rounded bg-gray-400 justify-center items-center space-y-8 w-4/6 ml-auto mr-auto p-8"
@@ -351,7 +328,7 @@ const AlbumCreationPage = () => {
           <div>
             <span className="font-bold">Check to add a genre:</span>
             <div className="flex flex-col items-left bg-white overflow-y-auto px-3 h-16">
-              {genres &&
+              {genres && genres.length !== 0 ?
                 genres.map((genre, index) => (
                   <Checkbox
                     key={index}
@@ -360,16 +337,17 @@ const AlbumCreationPage = () => {
                     value={genreCheckbox[index] ? genreCheckbox[index] : ""}
                     onChange={handleGenreChange}
                   />
-                ))}
+                ))
+              : <span>No Genres Added</span>}
             </div>
           </div>
         </div>
         {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
-        <div className="flex flex-col rounded items-center bg-gray-300 overflow-y-auto px-6 h-40">
+        <div className="flex flex-col rounded items-center border-black border-2 overflow-y-auto space-y-6 max-h-80">
           {albumData.songs.map((song, song_index) => (
             <div
               key={song_index}
-              className="flex flex-row justify-center items-center space-x-8 py-6"
+              className="flex flex-row rounded justify-center bg-gray-200 items-center space-x-8 p-6"
             >
               <label className="flex flex-col">
                 <span className="font-bold">{`Song ${
@@ -385,7 +363,7 @@ const AlbumCreationPage = () => {
               <div>
                 <span className="font-bold">Check to add a artist:</span>
                 <div className="flex flex-col items-left bg-white overflow-y-auto px-3 h-16">
-                  {artists &&
+                  {artists && artists.length !== 0 ?
                     artists.map((artist, artist_index) => (
                       <Checkbox
                         key={artist_index}
@@ -399,7 +377,8 @@ const AlbumCreationPage = () => {
                         }
                         onChange={handleArtistChange}
                       />
-                    ))}
+                    ))
+                  : <span>No Artists Added</span>}
                 </div>
               </div>
               <label className="flex flex-col">
