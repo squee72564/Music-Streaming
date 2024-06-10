@@ -1,21 +1,53 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchPaginatedContent } from "../utils/api";
 
 const SingleFieldModal = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [field, setField] = useState("");
   const [error, setError] = useState(null);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchPaginatedContent(
+          props.url,
+          setItems,
+          null,
+          null
+        );
+
+        if (!response.ok) {
+          throw new Error(`${response.status} : ${response.statusText}`);
+        }
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleFieldChange = (event) => {
     const { value } = event.target;
+
     setField(value);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const fieldTrimmed = field.trim();
+
+    if (fieldTrimmed === "") {
+      setError("Please input a value.")
+      return;
+    }
+
     try {
-      props.onUpdate(field);
+      props.onUpdate(fieldTrimmed);
       setField("");
       setError(null);
       setIsOpen(false);
@@ -32,7 +64,7 @@ const SingleFieldModal = (props) => {
         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         type="button"
       >
-        {"Add New " + props.modelName}
+        {"Add " + props.modelName}
       </button>
       {isOpen ? (
         <div className="fixed inset-0 flex items-center justify-center backdrop-filter backdrop-blur-md">
@@ -68,27 +100,36 @@ const SingleFieldModal = (props) => {
               </div>
             </div>
             {/** Modal body */}
-            <form
-              className="flex flex-col bg-gray-300 items-center justify-center p-5"
-              onSubmit={handleSubmit}
-            >
-              <label className="flex flex-row justify-center space-x-4 px-3 my-5">
-                <h1 className="font-bold">{props.modelName + " name"}:</h1>
-                <input
-                  type="text"
-                  name="label_name"
-                  value={field}
-                  onChange={handleFieldChange}
-                />
-              </label>
-              <button
-                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded"
-                type="submit"
+            <div className="flex flex-col">
+              <select className="text-center" onChange={handleFieldChange}>
+                <option value="">{"Select an existing " + props.modelName}</option>
+                {items && items.map( (item, index) => {
+                  const itemPropName = `${props.modelName.toLowerCase()}_name`;
+                  return <option key={index} value={item[itemPropName]}>{item[itemPropName]}</option>
+                })}
+              </select>
+              <form
+                className="flex flex-col bg-gray-300 items-center justify-center p-5"
+                onSubmit={handleSubmit}
               >
-                Save Changes
-              </button>
-              {error && <p>{error}</p>}
-            </form>
+                <label className="flex flex-row justify-center space-x-4 px-3 my-5">
+                  <h1 className="font-bold">{props.modelName + " name"}:</h1>
+                  <input
+                    type="text"
+                    name="label_name"
+                    value={field}
+                    onChange={handleFieldChange}
+                  />
+                </label>
+                <button
+                  className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded"
+                  type="submit"
+                >
+                  Save Changes
+                </button>
+                {error && <p>{error}</p>}
+              </form>
+            </div>
           </div>
         </div>
       ) : null}
