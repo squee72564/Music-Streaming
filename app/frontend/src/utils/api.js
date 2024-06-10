@@ -5,36 +5,31 @@ export const fetchPaginatedContent = async (
   setStateNextPage
 ) => {
   try {
-    const contentResponse = await fetch(url);
+    const response = await fetch(url);
 
-    if (contentResponse.ok) {
-      const contentData = await contentResponse.json();
-
-      setStateContent(contentData.results);
-
-      if (setStatePrevPage != null) setStatePrevPage(contentData.next);
-
-      if (setStateNextPage != null) setStateNextPage(contentData.previous);
-    } else {
-      throw new Error("Response was not OK");
+    if (!response.ok) {
+      throw new Error(`${response.status} : ${response.statusText}`);
     }
+
+    const contentData = await response.json();
+    setStateContent(contentData.results);
+    if (setStatePrevPage != null) setStatePrevPage(contentData.next);
+    if (setStateNextPage != null) setStateNextPage(contentData.previous);
   } catch (error) {
-    throw new Error(`Error fetching from :${url}`, error);
+    throw error;
   }
 };
 
 export const fetchContent = async (url, setStateContent) => {
   try {
-    const contentResponse = await fetch(url);
+    const response = await fetch(url);
 
-    if (contentResponse.ok) {
-      const contentData = await contentResponse.json();
-
-      setStateContent(contentData);
-    } else {
-      throw new Error("Response was not OK");
+    if (!response.ok) {
+      throw new Error(`${response.status} : ${response.statusText}`);
     }
+    const contentData = await response.json();
+    setStateContent(contentData);
   } catch (error) {
-    throw new Error(`Error fetching from :${url}`, error);
+    throw error;
   }
 };
