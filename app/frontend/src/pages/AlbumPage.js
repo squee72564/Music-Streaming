@@ -45,12 +45,11 @@ const AlbumPage = () => {
           {"Label: " + albumInfo.label.label_name}
         </h2>
         <p className="font-medium">
-          {"Genres: " +
-            albumInfo.genres
-              .map((genre) => {
+          {"Genres: " + 
+              albumInfo.genres.map((genre) => {
                 return genre.genre_name;
-              })
-              .join(", ")}
+              }).join(", ")
+          }
         </p>
         <select
           onChange={(event) => {
