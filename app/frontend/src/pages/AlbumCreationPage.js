@@ -58,8 +58,10 @@ const AlbumCreationPage = () => {
             null
           ),
         ]).then(() => {
-          if (genres) setGenreCheckbox(new Array(genres.length).fill(false));
-          if (artists) setArtistCheckbox(new Array(artists.length).fill(false));
+          setGenreCheckbox(genres ? new Array(genres.length).fill(false) : []);
+          setArtistCheckbox(
+            artists ? [new Array(artists.length).fill(false)] : []
+          );
         });
       } catch (error) {
         console.error("Error fetching data", error);
@@ -149,13 +151,16 @@ const AlbumCreationPage = () => {
     const [checkBoxIndex, songIndex] = indices;
 
     const updatedCheckboxState = [...artistCheckbox];
-    updatedCheckboxState[checkBoxIndex] = !updatedCheckboxState[checkBoxIndex];
+
+    updatedCheckboxState[songIndex][checkBoxIndex] =
+      !updatedCheckboxState[songIndex][checkBoxIndex];
+
     setArtistCheckbox(updatedCheckboxState);
 
     setAlbumData((prevAlbumData) => {
       const updatedSongData = [...prevAlbumData.songs];
 
-      if (updatedCheckboxState[checkBoxIndex]) {
+      if (updatedCheckboxState[songIndex][checkBoxIndex]) {
         updatedSongData[songIndex] = {
           ...updatedSongData[songIndex],
           artists: [
@@ -187,6 +192,11 @@ const AlbumCreationPage = () => {
         { song_title: "", artists: [], song_file: null },
       ],
     });
+
+    setArtistCheckbox([
+      ...artistCheckbox,
+      new Array(artists.length).fill(false),
+    ]);
   };
 
   const removeLastSongData = () => {
@@ -195,6 +205,8 @@ const AlbumCreationPage = () => {
         ...albumData,
         songs: albumData.songs.slice(0, -1),
       });
+
+      setArtistCheckbox(artistCheckbox.slice(0, -1));
     }
   };
 
@@ -302,7 +314,7 @@ const AlbumCreationPage = () => {
             <input
               type="text"
               name="album_title"
-              value={albumData.album_title}
+              value={albumData.album_title ? albumData.album_title : ""}
               onChange={handleTitleChange}
             />
           </label>
@@ -325,7 +337,10 @@ const AlbumCreationPage = () => {
               {labels &&
                 labels.map((label, index) => {
                   return (
-                    <option key={index} value={label.label_name}>
+                    <option
+                      key={index}
+                      value={label.label_name ? label.label_name : ""}
+                    >
                       {label.label_name}
                     </option>
                   );
@@ -342,7 +357,7 @@ const AlbumCreationPage = () => {
                     key={index}
                     label={genre.genre_name}
                     indices={[index]}
-                    value={genreCheckbox[index]}
+                    value={genreCheckbox[index] ? genreCheckbox[index] : ""}
                     onChange={handleGenreChange}
                   />
                 ))}
@@ -351,18 +366,20 @@ const AlbumCreationPage = () => {
         </div>
         {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
         <div className="flex flex-col rounded items-center bg-gray-300 overflow-y-auto px-6 h-40">
-          {albumData.songs.map((song, index) => (
+          {albumData.songs.map((song, song_index) => (
             <div
-              key={index}
+              key={song_index}
               className="flex flex-row justify-center items-center space-x-8 py-6"
             >
               <label className="flex flex-col">
-                <span className="font-bold">{`Song ${index + 1} Title:`}</span>
+                <span className="font-bold">{`Song ${
+                  song_index + 1
+                } Title:`}</span>
                 <input
                   type="text"
                   name="song_title"
-                  value={song.song_title}
-                  onChange={(event) => handleSongChange(event, index)}
+                  value={song.song_title ? song.song_title : ""}
+                  onChange={(event) => handleSongChange(event, song_index)}
                 />
               </label>
               <div>
@@ -373,20 +390,25 @@ const AlbumCreationPage = () => {
                       <Checkbox
                         key={artist_index}
                         label={artist.artist_name}
-                        indices={[artist_index, index]}
-                        value={artistCheckbox[artist_index]}
+                        indices={[artist_index, song_index]}
+                        value={
+                          artistCheckbox[song_index] &&
+                          artistCheckbox[song_index][artist_index]
+                            ? artistCheckbox[song_index][artist_index]
+                            : ""
+                        }
                         onChange={handleArtistChange}
                       />
                     ))}
                 </div>
               </div>
               <label className="flex flex-col">
-                <span className="font-bold">{`Upload Song ${
-                  index + 1
-                } File:`}</span>
+                <span className="font-bold">
+                  {`Upload Song ${song_index + 1} File:`}
+                </span>
                 <input
                   type="file"
-                  onChange={(event) => handleFileUpload(event, index)}
+                  onChange={(event) => handleFileUpload(event, song_index)}
                   accept="audio/*"
                 />
               </label>
