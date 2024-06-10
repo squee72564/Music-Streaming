@@ -1,5 +1,5 @@
 // AlbumCreationPage.js
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Checkbox } from "../components/Checkbox";
@@ -344,9 +344,9 @@ const AlbumCreationPage = () => {
               className="flex flex-row rounded justify-center bg-gray-200 items-center space-x-8 p-4"
             >
               <label className="flex flex-col">
-                <span className="font-bold">{`Song ${
-                  song_index + 1
-                } Title:`}</span>
+                <span className="font-bold">
+                  {`Song ${song_index + 1} Title:`}
+                </span>
                 <input
                   type="text"
                   name="song_title"
