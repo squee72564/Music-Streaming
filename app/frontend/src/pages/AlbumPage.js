@@ -12,20 +12,24 @@ const AlbumPage = () => {
   const apiUrl = `${API_URLS.ALBUMS}${albumId}/`;
 
   useEffect(() => {
-    try {
-      fetchContent(apiUrl, setAlbumInfo, null, null);
-    } catch (error) {
-      console.error(error);
-      setError(true);
-    }
+    const fetchAlbumData = async () => {
+      try {
+        await fetchContent(apiUrl, setAlbumInfo, null, null);
+      } catch (error) {
+        console.error(error);
+        setError(true);
+      }
+    };
+
+    fetchAlbumData();
   }, [apiUrl]);
+
+  if (error) {
+    return <h1>Album not found.</h1>;
+  }
 
   if (albumInfo === null) {
     return <h1>LOADING...</h1>;
-  }
-
-  if (error.notFound) {
-    return <h1>Album not found.</h1>;
   }
 
   return (
