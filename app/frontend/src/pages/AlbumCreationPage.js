@@ -52,7 +52,7 @@ const AlbumCreationPage = () => {
 
   const handleGenreUpdate = (newGenre) => {
     setGenres([...genres, { genre_name: newGenre }]);
-    setGenreCheckbox(...genreCheckbox, false);
+    setGenreCheckbox([...genreCheckbox, false]);
   };
 
   const handleTitleChange = (event) => {
@@ -89,23 +89,17 @@ const AlbumCreationPage = () => {
   const handleGenreChange = (indices, label) => {
     const [checkBoxIndex] = indices;
 
-    setGenreCheckbox( (prevState) => {
-      const updatedCheckboxState = [...prevState];
-      updatedCheckboxState[checkBoxIndex] = !prevState[checkBoxIndex];
-      return updatedCheckboxState;
-    });
+    const updatedCheckboxState = [...genreCheckbox];
+    updatedCheckboxState[checkBoxIndex] = !updatedCheckboxState[checkBoxIndex];
 
-    if (updatedCheckboxState[checkBoxIndex]) {
-      setAlbumData({
-        ...albumData,
-        genres: [...albumData.genres, { genre_name: label }],
-      });
-    } else {
-      setAlbumData({
-        ...albumData,
-        genres: albumData.genres.filter((genre) => genre.genre_name !== label),
-      });
-    }
+    setGenreCheckbox(updatedCheckboxState);
+
+    setAlbumData({
+      ...albumData,
+      genres: (updatedCheckboxState[checkBoxIndex])
+        ? [...albumData.genres, { genre_name: label }]
+        : albumData.genres.filter((genre) => genre.genre_name !== label)
+    });
   };
 
   const handleSongChange = (event, index) => {
@@ -124,14 +118,12 @@ const AlbumCreationPage = () => {
   const handleArtistChange = (indices, label) => {
     const [checkBoxIndex, songIndex] = indices;
 
-    setArtistCheckbox( (prevState) => {
-      const updatedCheckboxState = [...prevState];
+    const updatedCheckboxState = [...artistCheckbox];
 
-      updatedCheckboxState[songIndex][checkBoxIndex] =
-        !updatedCheckboxState[songIndex][checkBoxIndex];
+    updatedCheckboxState[songIndex][checkBoxIndex] =
+      !updatedCheckboxState[songIndex][checkBoxIndex];
 
-      return updatedCheckboxState;
-    });
+    setArtistCheckbox( updatedCheckboxState);
 
     setAlbumData((prevAlbumData) => {
       const updatedSongData = [...prevAlbumData.songs];
@@ -189,16 +181,18 @@ const AlbumCreationPage = () => {
   const handleFileUpload = (event, index) => {
     const { files } = event.target;
 
-    let updatedSongData = albumData.songs;
+    setAlbumData( (prevState) => {
+      const updatedSongData = prevState.songs;
 
-    updatedSongData[index] = {
-      ...updatedSongData[index],
-      song_file: files[0],
-    };
+      updatedSongData[index] = {
+        ...updatedSongData[index],
+        song_file: files[0],
+      };
 
-    setAlbumData({
-      ...albumData,
-      songs: updatedSongData,
+      return {
+        ...prevState,
+        songs: updatedSongData
+      };
     });
   };
 
@@ -280,7 +274,7 @@ const AlbumCreationPage = () => {
         <SingleFieldModal modelName={"Genre"} url={`${API_URLS.GENRES}?limit=100`} onUpdate={handleGenreUpdate} />
       </div>
       <form
-        className="flex flex-col rounded bg-gray-400 justify-center items-center space-y-8 w-4/6 ml-auto mr-auto p-8"
+        className="flex flex-col shadow-2xl rounded border-2 border-black bg-gray-400 justify-center items-center space-y-8 w-4/6 ml-auto mr-auto p-8"
         onSubmit={validateSubmission}
         encType="multipart/form-data"
       >
@@ -343,11 +337,11 @@ const AlbumCreationPage = () => {
           </div>
         </div>
         {/** Songs Input: Each song has a title, contributing artist(s), and a file*/}
-        <div className="flex flex-col rounded items-center border-black border-2 overflow-y-auto space-y-6 max-h-80">
+        <div className="flex flex-col rounded items-center border-black border-2 overflow-y-auto space-y-6 p-2 max-h-80">
           {albumData.songs.map((song, song_index) => (
             <div
               key={song_index}
-              className="flex flex-row rounded justify-center bg-gray-200 items-center space-x-8 p-6"
+              className="flex flex-row rounded justify-center bg-gray-200 items-center space-x-8 p-4"
             >
               <label className="flex flex-col">
                 <span className="font-bold">{`Song ${
@@ -396,21 +390,21 @@ const AlbumCreationPage = () => {
         </div>
         <div className="flex flex-row justify-center space-x-8">
           <button
-            className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="block bg-gray-300 hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             type="button"
             onClick={addNewSongData}
           >
             Add New Song
           </button>
           <button
-            className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="block bg-gray-300 hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             type="button"
             onClick={removeLastSongData}
           >
             Remove Last Song
           </button>
           <button
-            className="block text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="block bg-gray-300 hover:bg-gray-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             type="submit"
           >
             Submit
