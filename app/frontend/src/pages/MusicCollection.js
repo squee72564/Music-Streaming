@@ -15,6 +15,7 @@ const MusicCollection = () => {
   const [genres, setGenres] = useState(null);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
+  const [filterEnabled, setFilterEnabled] = useState(false);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -48,9 +49,21 @@ const MusicCollection = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center">
-      <h1 className="text-xl font-bold m-5">Welcome, {username}!</h1>
-      <div className="text-center space-y-6">
+    <div className="flex flex-row">
+      <div className="flex-[2_2_0%] flex-col justify-center text-center">
+        <div className="flex flex-row justify-between">
+          <h1 className="text-xl font-bold m-5">Welcome, {username}!</h1>
+          <div className="flex flex-row">
+            <button
+              className="font-bold rounded-lg bg-gray-300 hover:bg-gray-400 m-5 px-2"
+              onClick={() => {
+                setFilterEnabled(!filterEnabled);
+              }}
+            >
+              {!filterEnabled ? "Filter by..." : "Close"}
+            </button>
+          </div>
+        </div>
         <h1 className="text-xl font-bold m-3">Your Albums</h1>
         <div className="space-x-10">
           <button
@@ -68,7 +81,7 @@ const MusicCollection = () => {
         </div>
         <div
           id="Albums"
-          className="flex justify-center space-x-10 m-5 min-h-48"
+          className="flex flex-wrap justify-center space-x-10 m-5 min-h-48"
         >
           {albums && albums.length !== 0 ? (
             albums.map((album) => (
@@ -91,11 +104,12 @@ const MusicCollection = () => {
             <span className="font-bold">No albums to show</span>
           )}
         </div>
-        <h1 className="text-xl font-bold m-3">Filter by...</h1>
-        <div className="flex flex-row justify-center space-x-10">
-          <div className="flex flex-col border-2 bg-gray-400 border-black">
-            <h2 className="font-bold">Label</h2>
-            <ul className="overflow-y-auto bg-white h-32">
+      </div>
+      {filterEnabled && (
+        <div className="flex flex-[1_1_0%] flex-row justify-center m-5 bg-white">
+          <div className="flex flex-col flex-1 text-center border-2 border-black">
+            <span className="bg-gray-400">Labels</span>
+            <ul className="overflow-y-auto">
               <li
                 className="m-2 hover:bg-gray-200"
                 onClick={() => fetchAlbumPageData(API_URLS.ALBUMS)}
@@ -116,8 +130,8 @@ const MusicCollection = () => {
                 ))}
             </ul>
           </div>
-          <div className="flex flex-col border-2 bg-gray-400 border-black">
-            <h2 className="font-bold">Genre</h2>
+          <div className="flex flex-col flex-1 text-center border-2 border-black">
+            <span className="bg-gray-400">Genres</span>
             <ul className="overflow-y-auto bg-white h-32">
               <li
                 className="m-2 hover:bg-gray-200"
@@ -142,7 +156,7 @@ const MusicCollection = () => {
             </ul>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
