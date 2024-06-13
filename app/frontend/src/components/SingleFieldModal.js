@@ -21,7 +21,6 @@ const SingleFieldModal = (props) => {
         if (!response.ok) {
           throw new Error(`${response.status} : ${response.statusText}`);
         }
-
       } catch (error) {
         console.log(error);
       }
@@ -29,6 +28,12 @@ const SingleFieldModal = (props) => {
 
     fetchData();
   }, []);
+
+  const closeModal = () => {
+    setField("");
+    setError(null);
+    setIsOpen(false);
+  };
 
   const handleFieldChange = (event) => {
     const { value } = event.target;
@@ -42,7 +47,7 @@ const SingleFieldModal = (props) => {
     const fieldTrimmed = field.trim();
 
     if (fieldTrimmed === "") {
-      setError("Please input a value.")
+      setError("Please input a value.");
       return;
     }
 
@@ -78,7 +83,7 @@ const SingleFieldModal = (props) => {
                 <button
                   type="button"
                   className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeModal}
                 >
                   <svg
                     className="w-3 h-3"
@@ -100,16 +105,26 @@ const SingleFieldModal = (props) => {
               </div>
             </div>
             {/** Modal body */}
-            <div className="flex flex-col">
-              <select className="text-center" onChange={handleFieldChange}>
-                <option value="">{"Select an existing " + props.modelName}</option>
-                {items && items.map( (item, index) => {
-                  const itemPropName = `${props.modelName.toLowerCase()}_name`;
-                  return <option key={index} value={item[itemPropName]}>{item[itemPropName]}</option>
-                })}
+            <div className="flex flex-col justify-center bg-gray-300">
+              <select
+                className="flex text-center w-5/6 mx-auto m-2"
+                onChange={handleFieldChange}
+              >
+                <option value="">
+                  {"Select an existing " + props.modelName}
+                </option>
+                {items &&
+                  items.map((item, index) => {
+                    const itemPropName = `${props.modelName.toLowerCase()}_name`;
+                    return (
+                      <option key={index} value={item[itemPropName]}>
+                        {item[itemPropName]}
+                      </option>
+                    );
+                  })}
               </select>
               <form
-                className="flex flex-col bg-gray-300 items-center justify-center p-5"
+                className="flex flex-col items-center justify-center p-5"
                 onSubmit={handleSubmit}
               >
                 <label className="flex flex-row justify-center space-x-4 px-3 my-5">
