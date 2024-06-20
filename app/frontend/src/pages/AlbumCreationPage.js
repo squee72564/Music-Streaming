@@ -18,6 +18,8 @@ const AlbumCreationPage = () => {
   const [artists, setArtists] = useState([]);
   const [genres, setGenres] = useState([]);
 
+  const [error, setError] = useState(null);
+
   const [albumData, setAlbumData] = useState({
     album_title: "",
     image: null,
@@ -201,28 +203,65 @@ const AlbumCreationPage = () => {
 
     const { album_title, label, image, genres, songs } = albumData;
 
-    if (
-      album_title      === ""   ||
-      label.label_name === ""   ||
-      genres.length    === 0    ||
-      songs.length     === 0    ||
-      image            === null
-    ) {
+    if (album_title === "") {
+      setError("Please input a valid album title.")
       return;
     }
 
-    if (
-      !genres.every((genre) => genre.genre_name !== "") ||
-      !songs.every(
-        (song) =>
-          song.song_title !== ""  &&
-          song.song_file !== null &&
-          song.artists.length > 0 &&
-          song.artists.every((artist) => artist.artist_name !== "")
-      )
-    ) {
+    if (label.label_name === "") {
+      setError("Please input a valid label.");
       return;
     }
+
+    if (genres.length === 0) {
+      setError("Please choose at least one genre for the album.");
+      return;
+    }
+
+    if (songs.length === 0) {
+      setError("Please add at least one song to the album.");
+      return;
+    }
+
+    if (image === null) {
+      setError("Please upload a cover image for the album.");
+      return;
+    }
+
+    if (!genres.every((genre) => genre.genre_name !== "")) {
+      setError("Error with invalid genre name for a chosen genre.");
+      return;
+    }
+
+
+    for (let i = 0; i < songs.length; ++i) {
+      if (songs[i].song_title === "") {
+        setError(`Invalid song title for song ${i+1}.`);
+        return;
+      }
+
+      if (songs[i].song_file === null) {
+        console.log(songs[i].song_file);
+        setError(`No file given set for song ${i+1}.`);
+        return;
+      }
+
+      if (songs[i].artists.length <= 0) {
+        setError(`No artists chosen for song ${i+1}.`);
+        return;
+      }
+
+      console.log(songs[i].artists);
+
+      for (let j = 0; j < songs[i].artists.length; ++j) {
+        if (songs[i].artists[j].artist_name === "") {
+          setError(`Invalid artist name for song ${i+1}.`);
+          return;
+        }
+      }
+    }
+
+    setError(null);
 
     await handleSubmit();
   };
@@ -410,6 +449,7 @@ const AlbumCreationPage = () => {
             Submit
           </button>
         </div>
+        {error && <span>{error}</span>}
       </form>
     </>
   );
