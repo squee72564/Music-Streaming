@@ -10,8 +10,9 @@ node_modules
 *.pyc
 __pycache__
 db.sqlite3
-backend/media/users/*
-backend/static_files/*
+app/backend/media/users/*
+app/backend/static_files/js
+app/backend/static_files/css/styles.css
 
 # Backup files # 
 *.bak 
