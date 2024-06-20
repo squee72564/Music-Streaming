@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import Album from "../components/Album";
 import { fetchPaginatedContent } from "../utils/api";
 import { API_URLS } from "../utils/apiConfig";
 
@@ -50,6 +51,7 @@ const MusicCollection = () => {
 
   return (
     <div className="flex flex-row">
+      {/* Left Container for albums */}
       <div className="flex-[2_2_0%] flex-col justify-center text-center">
         <div className="flex flex-row justify-between">
           <h1 className="text-xl font-bold m-5">Welcome, {username}!</h1>
@@ -85,26 +87,18 @@ const MusicCollection = () => {
         >
           {albums && albums.length !== 0 ? (
             albums.map((album) => (
-              <div
+              <Album
                 key={album.id}
-                onClick={() => handleAlbumClick(album.id)}
-                className="transition ease-in-out hover:-translate-y-1 hover:scale-110 duration-300"
-                style={{ cursor: "pointer" }}
-              >
-                <p className="font-medium">{album.album_title}</p>
-                <img
-                  src={album.image}
-                  className="w-32 h-32"
-                  alt={album.album_title}
-                ></img>
-                <p>{album.genre}</p>
-              </div>
+                album={album}
+                handleAlbumClick={handleAlbumClick}
+              />
             ))
           ) : (
             <span className="font-bold">No albums to show</span>
           )}
         </div>
       </div>
+      {/* Right Container for filtering albums */}
       {filterEnabled && (
         <div className="flex flex-[1_1_0%] flex-row justify-center m-5 bg-white">
           <div className="flex flex-col flex-1 text-center border-2 border-black">
