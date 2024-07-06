@@ -17,6 +17,7 @@ const MusicCollection = () => {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [filterEnabled, setFilterEnabled] = useState(false);
+  const [filters, setFilters] = useState({label: '', genre: ''});
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -43,9 +44,26 @@ const MusicCollection = () => {
     navigate(`/music/collection/${albumId}`);
   };
 
-  const fetchAlbumPageData = (url) => {
+  const handleFilterClick = async (genreId = '', labelId = '') => {
+    const updatedFilters = {
+      ...filters,
+      genre: genreId ? `${genreId}` : '',
+      label: labelId ? `${labelId}` : '',
+    };
+  
+    setFilters(updatedFilters);
+  
+    const uri = `${API_URLS.ALBUMS}`
+      + `${updatedFilters.genre ? '?genres='+updatedFilters.genre : '?'}`
+      + `${updatedFilters.label && updatedFilters.genre ? '&' : ''}`
+      + `${updatedFilters.label ? 'label='+updatedFilters.label : ''}`;
+    
+    await fetchAlbumPageData(uri);
+  };
+
+  const fetchAlbumPageData = async (url) => {
     if (url) {
-      fetchPaginatedContent(url, setAlbums, setNextPage, setPrevPage);
+      await fetchPaginatedContent(url, setAlbums, setNextPage, setPrevPage);
     }
   };
 
@@ -83,7 +101,7 @@ const MusicCollection = () => {
         </div>
         <div
           id="Albums"
-          className="flex flex-wrap justify-center space-x-10 m-5 min-h-48"
+          className="flex flex-wrap justify-center items-center min-h-48"
         >
           {albums && albums.length !== 0 ? (
             albums.map((album) => (
@@ -103,10 +121,10 @@ const MusicCollection = () => {
         <div className="flex flex-[1_1_0%] flex-row justify-center m-5 bg-white">
           <div className="flex flex-col flex-1 text-center border-2 border-black">
             <span className="bg-gray-400">Labels</span>
-            <ul className="overflow-y-auto">
+            <ul className="overflow-y-auto bg-white h-auto">
               <li
-                className="m-2 hover:bg-gray-200"
-                onClick={() => fetchAlbumPageData(API_URLS.ALBUMS)}
+                className={`m-2 hover:bg-gray-300 ${!filters.label ? 'bg-gray-300': ''}`}
+                onClick={async () => await handleFilterClick(filters.genre, '')}
               >
                 All labels
               </li>
@@ -114,10 +132,8 @@ const MusicCollection = () => {
                 labels.map((label) => (
                   <li
                     key={label.id}
-                    className="m-2 hover:bg-gray-200"
-                    onClick={() =>
-                      fetchAlbumPageData(`${API_URLS.ALBUMS}?label=${label.id}`)
-                    }
+                    className={`m-2 hover:bg-gray-300 ${filters.label && filters.label == label.id ? 'bg-gray-300': ''}`}
+                    onClick={async () => await handleFilterClick(filters.genre, label.id)}
                   >
                     {label.label_name}
                   </li>
@@ -126,10 +142,10 @@ const MusicCollection = () => {
           </div>
           <div className="flex flex-col flex-1 text-center border-2 border-black">
             <span className="bg-gray-400">Genres</span>
-            <ul className="overflow-y-auto bg-white h-32">
+            <ul className="overflow-y-auto bg-white h-auto">
               <li
-                className="m-2 hover:bg-gray-200"
-                onClick={() => fetchAlbumPageData(API_URLS.ALBUMS)}
+                className={`m-2 hover:bg-gray-300 ${!filters.genre ? 'bg-gray-300': ''}`}
+                onClick={async () => await handleFilterClick('', filters.label)}
               >
                 All Genres
               </li>
@@ -137,12 +153,8 @@ const MusicCollection = () => {
                 genres.map((genre) => (
                   <li
                     key={genre.id}
-                    className="m-2 hover:bg-gray-200"
-                    onClick={() =>
-                      fetchAlbumPageData(
-                        `${API_URLS.ALBUMS}?genres=${genre.id}`
-                      )
-                    }
+                    className={`m-2 hover:bg-gray-300 ${filters.genre && filters.genre == genre.id ? 'bg-gray-300': ''}`}
+                    onClick={async () => await handleFilterClick(genre.id, filters.label)}
                   >
                     {genre.genre_name}
                   </li>
