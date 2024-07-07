@@ -3,9 +3,11 @@
 {% load static %}
 {% block content %}
 <div class="relative flex flex-col items-center text-center space-y-10 pt-8">
-    <h1 class="text-3xl font-bold">MUSIC STREAMING</h1>
-    <p>MUSIC STREAMING is a full-stack web application that allows users to upload and stream their media collections.</p>
-    <img src="{% static 'images/chaosv2.svg' %}" alt="Musical Note Logo" width="15%" height="15%">
+    <h1 class="text-3xl font-bold">Welcome to MUSIC STREAMING</h1>
+    <div class="flex flex-row justify-center items-center space-x-10">
+        <img class="animate-pulse" src="{% static 'images/chaosv2.svg' %}" alt="Musical Note Logo" width="45%" height="45%">
+        <p class="w-72 p-4 border-2 shadow rounded bg-white" >MUSIC STREAMING is a full-stack web application that allows users to upload and stream their media collections.</p>
+    </div>
     {% if user.is_authenticated %}
     <p class="max-w-80 space-y-10">Press <b>Logout</b> to safely logout before you leave.</p>
     {% else %}
